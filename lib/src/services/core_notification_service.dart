@@ -20,8 +20,7 @@ import 'scheduling_settings_service.dart';
 class CoreNotificationService {
   static const String _defaultChannelId = 'scheduled_announcements';
   static const String _defaultChannelName = 'Scheduled Announcements';
-  static const String _defaultChannelDescription =
-      'Automated text-to-speech announcements';
+  static const String _defaultChannelDescription = 'Automated text-to-speech announcements';
 
   // Validation constants to prevent excessive notification load (used by validation config)
 
@@ -36,8 +35,7 @@ class CoreNotificationService {
   final List<Timer> _activeAnnouncementTimers = [];
 
   // Stream controller for status updates
-  final StreamController<AnnouncementStatus> _statusController =
-      StreamController<AnnouncementStatus>.broadcast();
+  final StreamController<AnnouncementStatus> _statusController = StreamController<AnnouncementStatus>.broadcast();
 
   // Cleanup listener subscription
   StreamSubscription<AnnouncementStatus>? _cleanupSubscription;
@@ -56,8 +54,7 @@ class CoreNotificationService {
   }
 
   /// Get whether both notification permissions and exact alarms are allowed
-  bool get isNotificationsAllowed =>
-      _exactAlarmsAllowed && _notificationAllowed;
+  bool get isNotificationsAllowed => _exactAlarmsAllowed && _notificationAllowed;
 
   /// Stream of announcement status updates
   Stream<AnnouncementStatus> get statusStream => _statusController.stream;
@@ -75,34 +72,21 @@ class CoreNotificationService {
     await _initializeTts();
 
     // Android initialization settings
-    const androidSettings = AndroidInitializationSettings(
-      '@mipmap/ic_launcher',
-    );
+    const androidSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
 
     // iOS initialization settings
-    const iosSettings = DarwinInitializationSettings(
-      requestAlertPermission: true,
-      requestBadgePermission: true,
-      requestSoundPermission: true,
-    );
+    const iosSettings = DarwinInitializationSettings(requestAlertPermission: true, requestBadgePermission: true, requestSoundPermission: true);
 
-    const initSettings = InitializationSettings(
-      android: androidSettings,
-      iOS: iosSettings,
-    );
+    const initSettings = InitializationSettings(android: androidSettings, iOS: iosSettings);
 
     final initialized = await _notifications.initialize(
       initSettings,
-      onDidReceiveNotificationResponse: (response) =>
-          onNotificationResponse(response, _statusController, _config, _tts),
-      onDidReceiveBackgroundNotificationResponse:
-          _onBackgroundNotificationResponse,
+      onDidReceiveNotificationResponse: (response) => onNotificationResponse(response, _statusController, _config, _tts),
+      onDidReceiveBackgroundNotificationResponse: _onBackgroundNotificationResponse,
     );
 
     if (initialized != true) {
-      throw const NotificationInitializationException(
-        'Failed to initialize notifications',
-      );
+      throw const NotificationInitializationException('Failed to initialize notifications');
     }
 
     // Request permissions for Android 13+
@@ -113,10 +97,7 @@ class CoreNotificationService {
   }
 
   /// Schedule a one-time announcement
-  Future<void> scheduleOneTimeAnnouncement({
-    required String content,
-    required DateTime dateTime,
-  }) async {
+  Future<void> scheduleOneTimeAnnouncement({required String content, required DateTime dateTime}) async {
     try {
       _statusController.add(AnnouncementStatus.scheduled);
 
@@ -128,15 +109,19 @@ class CoreNotificationService {
       final tzDateTime = tz.TZDateTime.from(dateTime, tz.local);
 
       final notificationId = DateTime.now().millisecondsSinceEpoch ~/ 1000;
-      await _scheduleNotification(
-        notificationId: notificationId,
-        scheduledDate: tzDateTime,
-        content: content,
-        title: 'Scheduled Announcement',
-      );
+
+      if (_config.enableDebugLogging) {
+        debugPrint('[CoreNotificationService] scheduleOneTimeAnnouncement: Scheduling notification ID=$notificationId for $tzDateTime');
+      }
+
+      await _scheduleNotification(notificationId: notificationId, scheduledDate: tzDateTime, content: content, title: 'Scheduled Announcement');
 
       // Store the scheduled time for later retrieval
       await _settingsService.setScheduledTime(notificationId, tzDateTime);
+
+      if (_config.enableDebugLogging) {
+        debugPrint('[CoreNotificationService] scheduleOneTimeAnnouncement: Stored scheduled time for notification ID=$notificationId');
+      }
 
       if (_config.enableTTS) {
         final delay = tzDateTime.difference(tz.TZDateTime.now(tz.local));
@@ -144,9 +129,7 @@ class CoreNotificationService {
       }
     } catch (e) {
       _statusController.add(AnnouncementStatus.failed);
-      throw NotificationSchedulingException(
-        'Failed to schedule one-time announcement: $e',
-      );
+      throw NotificationSchedulingException('Failed to schedule one-time announcement: $e');
     }
   }
 
@@ -160,13 +143,8 @@ class CoreNotificationService {
     try {
       _statusController.add(AnnouncementStatus.scheduled);
 
-      await cancelAllNotifications();
-
       // Store the announcement settings
-      await _settingsService.setAnnouncementTime(
-        announcementTime.hour,
-        announcementTime.minute,
-      );
+      await _settingsService.setAnnouncementTime(announcementTime.hour, announcementTime.minute);
 
       if (recurrence != null) {
         await _settingsService.setIsRecurring(true);
@@ -175,20 +153,14 @@ class CoreNotificationService {
           await _settingsService.setRecurrenceDays(customDays);
         }
 
-        await _scheduleRecurringNotifications(
-          content: content,
-          recurrencePattern: recurrence,
-          customDays: customDays ?? recurrence.defaultDays,
-        );
+        await _scheduleRecurringNotifications(content: content, recurrencePattern: recurrence, customDays: customDays ?? recurrence.defaultDays);
       } else {
         await _settingsService.setIsRecurring(false);
         await _scheduleSingleNotification(content: content);
       }
     } catch (e) {
       _statusController.add(AnnouncementStatus.failed);
-      throw NotificationSchedulingException(
-        'Failed to schedule recurring announcement: $e',
-      );
+      throw NotificationSchedulingException('Failed to schedule recurring announcement: $e');
     }
   }
 
@@ -206,9 +178,7 @@ class CoreNotificationService {
       // Clear stored scheduled times
       await _settingsService.clearScheduledTimes();
     } catch (e) {
-      throw NotificationSchedulingException(
-        'Failed to cancel notifications: $e',
-      );
+      throw NotificationSchedulingException('Failed to cancel notifications: $e');
     }
   }
 
@@ -220,17 +190,14 @@ class CoreNotificationService {
         await _notifications.cancel(notificationId);
       }
     } catch (e) {
-      throw NotificationSchedulingException(
-        'Failed to cancel announcement: $e',
-      );
+      throw NotificationSchedulingException('Failed to cancel announcement: $e');
     }
   }
 
   /// Get list of scheduled announcements
   Future<List<ScheduledAnnouncement>> getScheduledAnnouncements() async {
     try {
-      final pendingNotifications = await _notifications
-          .pendingNotificationRequests();
+      final pendingNotifications = await _notifications.pendingNotificationRequests();
 
       // Retrieve stored scheduled times
       // flutter_local_notifications doesn't expose scheduled times in its API,
@@ -239,21 +206,12 @@ class CoreNotificationService {
 
       return pendingNotifications.map((notification) {
         final storedTime = scheduledTimes[notification.id.toString()];
-        final scheduledTime = storedTime != null
-            ? DateTime.fromMillisecondsSinceEpoch(storedTime)
-            : DateTime.now();
+        final scheduledTime = storedTime != null ? DateTime.fromMillisecondsSinceEpoch(storedTime) : DateTime.now();
 
-        return ScheduledAnnouncement(
-          id: notification.id.toString(),
-          content: notification.body ?? '',
-          scheduledTime: scheduledTime,
-          isActive: true,
-        );
+        return ScheduledAnnouncement(id: notification.id.toString(), content: notification.body ?? '', scheduledTime: scheduledTime, isActive: true);
       }).toList();
     } catch (e) {
-      throw NotificationSchedulingException(
-        'Failed to get scheduled announcements: $e',
-      );
+      throw NotificationSchedulingException('Failed to get scheduled announcements: $e');
     }
   }
 
@@ -281,8 +239,19 @@ class CoreNotificationService {
 
   /// Set up listener for cleaning up completed announcements
   void _setupCleanupListener() {
+    if (_config.enableDebugLogging) {
+      debugPrint('[CoreNotificationService] _setupCleanupListener: Setting up cleanup listener for status stream');
+    }
+
     _cleanupSubscription = _statusController.stream.listen((status) {
+      if (_config.enableDebugLogging) {
+        debugPrint('[CoreNotificationService] _setupCleanupListener: Received status update: $status');
+      }
+
       if (status == AnnouncementStatus.completed) {
+        if (_config.enableDebugLogging) {
+          debugPrint('[CoreNotificationService] _setupCleanupListener: Status is completed, triggering cleanup');
+        }
         _cleanupCompletedAnnouncements();
       }
     });
@@ -295,16 +264,25 @@ class CoreNotificationService {
   /// longer pending (i.e., have been executed) are removed from storage.
   Future<void> _cleanupCompletedAnnouncements() async {
     try {
-      final pendingNotifications = await _notifications
-          .pendingNotificationRequests();
-      final pendingIds = pendingNotifications
-          .map((n) => n.id.toString())
-          .toSet();
+      final pendingNotifications = await _notifications.pendingNotificationRequests();
+      final pendingIds = pendingNotifications.map((n) => n.id.toString()).toSet();
+
+      if (_config.enableDebugLogging) {
+        debugPrint('[CoreNotificationService] _cleanupCompletedAnnouncements: Pending notification IDs from system: $pendingIds');
+      }
 
       final storedTimes = await _settingsService.getScheduledTimes();
-      final idsToRemove = storedTimes.keys
-          .where((id) => !pendingIds.contains(id))
-          .toList();
+
+      if (_config.enableDebugLogging) {
+        debugPrint('[CoreNotificationService] _cleanupCompletedAnnouncements: Stored times keys: ${storedTimes.keys.toList()}');
+        debugPrint('[CoreNotificationService] _cleanupCompletedAnnouncements: Stored times: $storedTimes');
+      }
+
+      final idsToRemove = storedTimes.keys.where((id) => !pendingIds.contains(id)).toList();
+
+      if (_config.enableDebugLogging) {
+        debugPrint('[CoreNotificationService] _cleanupCompletedAnnouncements: IDs to remove: $idsToRemove');
+      }
 
       if (idsToRemove.isNotEmpty) {
         // Remove completed announcements from storage
@@ -317,18 +295,14 @@ class CoreNotificationService {
         for (final entry in storedTimes.entries) {
           final intKey = int.tryParse(entry.key);
           if (intKey != null) {
-            cleanedTimes[intKey] = DateTime.fromMillisecondsSinceEpoch(
-              entry.value,
-            );
+            cleanedTimes[intKey] = DateTime.fromMillisecondsSinceEpoch(entry.value);
           }
         }
 
         await _settingsService.setScheduledTimes(cleanedTimes);
 
         if (_config.enableDebugLogging) {
-          debugPrint(
-            '[CoreNotificationService] Cleaned up ${idsToRemove.length} completed announcement(s)',
-          );
+          debugPrint('[CoreNotificationService] Cleaned up ${idsToRemove.length} completed announcement(s)');
         }
       }
     } catch (e) {
@@ -358,17 +332,12 @@ class CoreNotificationService {
   /// Request necessary permissions
   Future<void> _requestPermissions() async {
     // Request notification permission for Android 13+
-    final androidPlugin = _notifications
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >();
+    final androidPlugin = _notifications.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
 
     if (androidPlugin != null) {
-      _notificationAllowed =
-          await androidPlugin.requestNotificationsPermission() ?? false;
+      _notificationAllowed = await androidPlugin.requestNotificationsPermission() ?? false;
 
-      _exactAlarmsAllowed =
-          await androidPlugin.requestExactAlarmsPermission() ?? false;
+      _exactAlarmsAllowed = await androidPlugin.requestExactAlarmsPermission() ?? false;
     }
   }
 
@@ -383,10 +352,7 @@ class CoreNotificationService {
       enableVibration: true,
     );
 
-    final androidPlugin = _notifications
-        .resolvePlatformSpecificImplementation<
-          AndroidFlutterLocalNotificationsPlugin
-        >();
+    final androidPlugin = _notifications.resolvePlatformSpecificImplementation<AndroidFlutterLocalNotificationsPlugin>();
 
     await androidPlugin?.createNotificationChannel(androidChannel);
   }
@@ -406,26 +372,14 @@ class CoreNotificationService {
     }
 
     final now = tz.TZDateTime.now(tz.local);
-    var scheduledDate = tz.TZDateTime(
-      tz.local,
-      now.year,
-      now.month,
-      now.day,
-      hour,
-      minute,
-    );
+    var scheduledDate = tz.TZDateTime(tz.local, now.year, now.month, now.day, hour, minute);
 
     // If the scheduled time has already passed today, schedule for tomorrow
     if (scheduledDate.isBefore(now)) {
       scheduledDate = scheduledDate.add(const Duration(days: 1));
     }
 
-    await _scheduleNotification(
-      notificationId: 0,
-      scheduledDate: scheduledDate,
-      content: content,
-      title: 'Scheduled Announcement',
-    );
+    await _scheduleNotification(notificationId: 0, scheduledDate: scheduledDate, content: content, title: 'Scheduled Announcement');
 
     // Store the scheduled time for later retrieval
     await _settingsService.setScheduledTime(0, scheduledDate);
@@ -437,11 +391,7 @@ class CoreNotificationService {
   }
 
   /// Schedule recurring notifications
-  Future<void> _scheduleRecurringNotifications({
-    required String content,
-    required RecurrencePattern recurrencePattern,
-    required List<int> customDays,
-  }) async {
+  Future<void> _scheduleRecurringNotifications({required String content, required RecurrencePattern recurrencePattern, required List<int> customDays}) async {
     final hour = await _settingsService.getAnnouncementHour();
     final minute = await _settingsService.getAnnouncementMinute();
 
@@ -470,12 +420,7 @@ class CoreNotificationService {
 
     for (int i = 0; i < daysToSchedule.length; i++) {
       final scheduledDate = daysToSchedule[i];
-      await _scheduleNotification(
-        notificationId: i,
-        scheduledDate: scheduledDate,
-        content: content,
-        title: 'Recurring Announcement',
-      );
+      await _scheduleNotification(notificationId: i, scheduledDate: scheduledDate, content: content, title: 'Recurring Announcement');
 
       // Store scheduled time for later retrieval
       scheduledTimesMap[i] = scheduledDate;
@@ -497,6 +442,11 @@ class CoreNotificationService {
     required String content,
     required String title,
   }) async {
+    if (_config.enableDebugLogging) {
+      debugPrint('[CoreNotificationService] _scheduleNotification: Attempting to schedule ID=$notificationId for $scheduledDate');
+      debugPrint('[CoreNotificationService] _scheduleNotification: exactAlarmsAllowed=$_exactAlarmsAllowed, notificationAllowed=$_notificationAllowed');
+    }
+
     final androidDetails = AndroidNotificationDetails(
       _config.notificationConfig.channelId,
       _config.notificationConfig.channelName,
@@ -510,16 +460,15 @@ class CoreNotificationService {
       showWhen: true,
     );
 
-    const iosDetails = DarwinNotificationDetails(
-      presentAlert: true,
-      presentBadge: true,
-      presentSound: true,
-    );
+    const iosDetails = DarwinNotificationDetails(presentAlert: true, presentBadge: true, presentSound: true);
 
-    final platformDetails = NotificationDetails(
-      android: androidDetails,
-      iOS: iosDetails,
-    );
+    final platformDetails = NotificationDetails(android: androidDetails, iOS: iosDetails);
+
+    final scheduleMode = _exactAlarmsAllowed ? AndroidScheduleMode.exactAllowWhileIdle : AndroidScheduleMode.inexactAllowWhileIdle;
+
+    if (_config.enableDebugLogging) {
+      debugPrint('[CoreNotificationService] _scheduleNotification: Using schedule mode=$scheduleMode, matchDateTimeComponents=DateTimeComponents.time');
+    }
 
     await _notifications.zonedSchedule(
       notificationId,
@@ -527,11 +476,13 @@ class CoreNotificationService {
       content,
       scheduledDate,
       platformDetails,
-      androidScheduleMode: _exactAlarmsAllowed
-          ? AndroidScheduleMode.exactAllowWhileIdle
-          : AndroidScheduleMode.inexactAllowWhileIdle,
+      androidScheduleMode: scheduleMode,
       matchDateTimeComponents: DateTimeComponents.time,
     );
+
+    if (_config.enableDebugLogging) {
+      debugPrint('[CoreNotificationService] _scheduleNotification: Successfully called zonedSchedule for ID=$notificationId');
+    }
   }
 
   /// Schedule unattended TTS announcement
@@ -552,31 +503,22 @@ class CoreNotificationService {
   }
 
   /// Validate recurring settings to prevent excessive notifications
-  Future<void> _validateRecurringSettings(
-    RecurrencePattern pattern,
-    List<int> customDays,
-  ) async {
+  Future<void> _validateRecurringSettings(RecurrencePattern pattern, List<int> customDays) async {
     if (_config.validationConfig.enableEdgeCaseValidation) {
       // Validate pattern-specific constraints
       switch (pattern) {
         case RecurrencePattern.custom:
           if (customDays.isEmpty) {
-            throw const ValidationException(
-              'Custom recurrence pattern requires at least one day to be selected',
-            );
+            throw const ValidationException('Custom recurrence pattern requires at least one day to be selected');
           }
           if (customDays.length > 7) {
-            throw const ValidationException(
-              'Custom recurrence pattern cannot have more than 7 days',
-            );
+            throw const ValidationException('Custom recurrence pattern cannot have more than 7 days');
           }
           break;
         case RecurrencePattern.daily:
           // Daily is always valid, but check against max notifications
           if (_config.validationConfig.maxNotificationsPerDay < 1) {
-            throw const ValidationException(
-              'Daily notifications require at least 1 notification per day',
-            );
+            throw const ValidationException('Daily notifications require at least 1 notification per day');
           }
           break;
         default:
@@ -599,14 +541,7 @@ class CoreNotificationService {
 
     for (int dayOffset = 0; dayOffset < maxDays; dayOffset++) {
       final candidateDate = startDate.add(Duration(days: dayOffset));
-      final scheduledDateTime = tz.TZDateTime(
-        tz.local,
-        candidateDate.year,
-        candidateDate.month,
-        candidateDate.day,
-        hour,
-        minute,
-      );
+      final scheduledDateTime = tz.TZDateTime(tz.local, candidateDate.year, candidateDate.month, candidateDate.day, hour, minute);
 
       // Skip if the time has already passed today
       if (dayOffset == 0 && scheduledDateTime.isBefore(startDate)) {
@@ -651,14 +586,35 @@ class CoreNotificationService {
     AnnouncementConfig config,
     FlutterTts? tts,
   ) {
+    if (config.enableDebugLogging) {
+      debugPrint(
+        '[CoreNotificationService] onNotificationResponse: Received notification response - ID=${response.id}, payload=${response.payload}, actionId=${response.actionId}',
+      );
+    }
+
     // Emit completed status to trigger cleanup via listener
     statusController.add(AnnouncementStatus.completed);
+
+    if (config.enableDebugLogging) {
+      debugPrint('[CoreNotificationService] onNotificationResponse: Emitted AnnouncementStatus.completed to status stream');
+    }
 
     if (config.enableTTS && tts != null) {
       // Trigger TTS for notification content
       final payload = response.payload ?? response.actionId ?? '';
       if (payload.isNotEmpty) {
+        if (config.enableDebugLogging) {
+          debugPrint('[CoreNotificationService] onNotificationResponse: Triggering TTS for payload: $payload');
+        }
         tts.speak(payload);
+      } else {
+        if (config.enableDebugLogging) {
+          debugPrint('[CoreNotificationService] onNotificationResponse: No payload to speak (empty)');
+        }
+      }
+    } else {
+      if (config.enableDebugLogging) {
+        debugPrint('[CoreNotificationService] onNotificationResponse: TTS not triggered (enableTTS=${config.enableTTS}, tts=$tts)');
       }
     }
   }
