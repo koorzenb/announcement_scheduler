@@ -358,6 +358,9 @@ class AnnouncementScheduler {
   /// - [dateTime]: The exact date and time when the announcement should be
   ///   delivered. Must be in the future.
   ///
+  /// - [id]: Optional unique identifier. If not provided, one will be generated.
+  ///   Must be a numeric string if provided.
+  ///
   /// - [metadata]: Optional custom data to associate with the announcement.
   ///   This can be used to store additional context or application-specific
   ///   information.
@@ -390,6 +393,7 @@ class AnnouncementScheduler {
   /// await scheduler.scheduleOneTimeAnnouncement(
   ///   content: 'Happy Birthday!',
   ///   dateTime: DateTime(2025, 3, 15, 9, 0),
+  ///   id: 123456789,
   ///   metadata: {'type': 'birthday', 'person': 'John'},
   /// );
   /// ```
@@ -402,6 +406,7 @@ class AnnouncementScheduler {
   Future<void> scheduleOneTimeAnnouncement({
     required String content,
     required DateTime dateTime,
+    int? id,
     Map<String, dynamic>? metadata,
   }) async {
     // Validate content
@@ -414,13 +419,22 @@ class AnnouncementScheduler {
       throw const ValidationException('Scheduled time must be in the future');
     }
 
+    // Generate ID if not provided
+    final announcementId = id ?? DateTime.now().millisecondsSinceEpoch;
+
     // Schedule with the notification service
     await _notificationService!.scheduleOneTimeAnnouncement(
       content: content,
       dateTime: dateTime,
+      id: announcementId,
+      metadata: metadata,
     );
 
-    _log('Scheduled one-time announcement at $dateTime');
+    if (_config.enableDebugLogging) {
+      _log(
+        'Scheduled one-time announcement at $dateTime with ID: $announcementId',
+      );
+    }
   }
 
   /// Cancel all scheduled announcements.
@@ -485,7 +499,7 @@ class AnnouncementScheduler {
   ///
   /// - [cancelScheduledAnnouncements] to cancel all announcements
   /// - [getScheduledAnnouncements] to view currently scheduled announcements
-  Future<void> cancelAnnouncementById(String id) async {
+  Future<void> cancelAnnouncementById(int id) async {
     await _notificationService!.cancelAnnouncementById(id);
     _log('Cancelled announcement: $id');
   }

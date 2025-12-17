@@ -11,14 +11,14 @@ import 'recurrence_pattern.dart';
 /// ```dart
 /// // Create a one-time announcement
 /// final oneTime = ScheduledAnnouncement(
-///   id: 'announcement_123',
+///   id: 123,
 ///   content: 'Meeting in 5 minutes',
 ///   scheduledTime: DateTime.now().add(Duration(minutes: 55)),
 /// );
 ///
 /// // Create a recurring announcement
 /// final recurring = ScheduledAnnouncement(
-///   id: 'announcement_456',
+///   id: 456,
 ///   content: 'Daily standup time',
 ///   scheduledTime: DateTime(2025, 1, 20, 9, 0),
 ///   recurrence: RecurrencePattern.weekdays,
@@ -27,7 +27,7 @@ import 'recurrence_pattern.dart';
 ///
 /// // Custom recurrence pattern
 /// final custom = ScheduledAnnouncement(
-///   id: 'announcement_789',
+///   id: 789,
 ///   content: 'Workout reminder',
 ///   scheduledTime: DateTime(2025, 1, 20, 6, 0),
 ///   recurrence: RecurrencePattern.custom,
@@ -57,7 +57,7 @@ import 'recurrence_pattern.dart';
 /// - [AnnouncementScheduler.scheduleAnnouncement] to create announcements
 class ScheduledAnnouncement {
   /// Unique identifier for the announcement
-  final String id;
+  final int id;
 
   /// The text content to be announced
   final String content;
@@ -109,7 +109,8 @@ class ScheduledAnnouncement {
     RecurrencePattern? recurrence;
     if (json['recurrence'] != null) {
       final recurrenceIndex = json['recurrence'] as int;
-      if (recurrenceIndex >= 0 && recurrenceIndex < RecurrencePattern.values.length) {
+      if (recurrenceIndex >= 0 &&
+          recurrenceIndex < RecurrencePattern.values.length) {
         recurrence = RecurrencePattern.values[recurrenceIndex];
       }
     }
@@ -128,9 +129,11 @@ class ScheduledAnnouncement {
     }
 
     return ScheduledAnnouncement(
-      id: json['id'] as String,
+      id: json['id'] as int,
       content: json['content'] as String,
-      scheduledTime: DateTime.fromMillisecondsSinceEpoch(json['scheduledTime'] as int),
+      scheduledTime: DateTime.fromMillisecondsSinceEpoch(
+        json['scheduledTime'] as int,
+      ),
       recurrence: recurrence,
       customDays: customDays,
       isActive: json['isActive'] as bool? ?? true,
@@ -159,7 +162,7 @@ class ScheduledAnnouncement {
 
   /// Creates a copy of this announcement with the given fields replaced
   ScheduledAnnouncement copyWith({
-    String? id,
+    int? id,
     String? content,
     DateTime? scheduledTime,
     RecurrencePattern? recurrence,
@@ -208,7 +211,13 @@ class ScheduledAnnouncement {
 
   @override
   int get hashCode =>
-      id.hashCode ^ content.hashCode ^ scheduledTime.hashCode ^ recurrence.hashCode ^ customDays.hashCode ^ isActive.hashCode ^ metadata.hashCode;
+      id.hashCode ^
+      content.hashCode ^
+      scheduledTime.hashCode ^
+      recurrence.hashCode ^
+      customDays.hashCode ^
+      isActive.hashCode ^
+      metadata.hashCode;
 
   @override
   String toString() {

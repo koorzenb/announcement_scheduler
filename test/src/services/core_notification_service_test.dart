@@ -34,16 +34,19 @@ void main() {
 
       // Stub the speak method by default
       when(mockTts.speak(any)).thenAnswer((_) async => 1);
+      when(mockTts.stop()).thenAnswer((_) async => 1);
 
       // Create a minimal service instance
       service = CoreNotificationService(
         settingsService: mockSettingsService,
         config: config,
+        tts: mockTts,
       );
     });
 
     tearDown(() {
       statusController.close();
+      service.dispose();
     });
 
     test(
@@ -58,13 +61,8 @@ void main() {
         );
 
         // Act
-        final statusFuture = statusController.stream.first;
-        service.onNotificationResponse(
-          response,
-          statusController,
-          config,
-          mockTts,
-        );
+        final statusFuture = service.statusStream.first;
+        service.onNotificationResponse(response);
 
         // Assert
         final status = await statusFuture;
@@ -90,12 +88,7 @@ void main() {
         when(mockTts.speak(any)).thenAnswer((_) async => 1);
 
         // Act
-        service.onNotificationResponse(
-          response,
-          statusController,
-          config,
-          mockTts,
-        );
+        service.onNotificationResponse(response);
 
         // Allow async operations to complete
         await Future.delayed(const Duration(milliseconds: 10));
@@ -119,12 +112,7 @@ void main() {
         when(mockTts.speak(any)).thenAnswer((_) async => 1);
 
         // Act
-        service.onNotificationResponse(
-          response,
-          statusController,
-          config,
-          mockTts,
-        );
+        service.onNotificationResponse(response);
 
         // Allow async operations to complete
         await Future.delayed(const Duration(milliseconds: 10));
@@ -141,6 +129,13 @@ void main() {
         notificationConfig: NotificationConfig(),
       );
 
+      // Create service with disabled TTS config
+      final serviceWithoutTts = CoreNotificationService(
+        settingsService: mockSettingsService,
+        config: configWithoutTts,
+        tts: mockTts,
+      );
+
       final response = NotificationResponse(
         notificationResponseType: NotificationResponseType.selectedNotification,
         id: 1,
@@ -150,22 +145,25 @@ void main() {
       when(mockTts.speak(any)).thenAnswer((_) async => 1);
 
       // Act
-      service.onNotificationResponse(
-        response,
-        statusController,
-        configWithoutTts,
-        mockTts,
-      );
+      serviceWithoutTts.onNotificationResponse(response);
 
       // Allow async operations to complete
       await Future.delayed(const Duration(milliseconds: 10));
 
       // Assert
       verifyNever(mockTts.speak(any));
+      await serviceWithoutTts.dispose();
     });
 
     test('does not trigger TTS when tts is null', () async {
       // Arrange
+      // Create service with null TTS
+      final serviceNullTts = CoreNotificationService(
+        settingsService: mockSettingsService,
+        config: config,
+        tts: null,
+      );
+
       final response = NotificationResponse(
         notificationResponseType: NotificationResponseType.selectedNotification,
         id: 1,
@@ -173,18 +171,14 @@ void main() {
       );
 
       // Act
-      service.onNotificationResponse(
-        response,
-        statusController,
-        config,
-        null, // No TTS instance
-      );
+      serviceNullTts.onNotificationResponse(response);
 
       // Allow async operations to complete
       await Future.delayed(const Duration(milliseconds: 10));
 
       // Assert
       verifyNever(mockTts.speak(any));
+      await serviceNullTts.dispose();
     });
 
     test(
@@ -201,12 +195,7 @@ void main() {
         when(mockTts.speak(any)).thenAnswer((_) async => 1);
 
         // Act
-        service.onNotificationResponse(
-          response,
-          statusController,
-          config,
-          mockTts,
-        );
+        service.onNotificationResponse(response);
 
         // Allow async operations to complete
         await Future.delayed(const Duration(milliseconds: 10));
@@ -223,6 +212,13 @@ void main() {
         notificationConfig: NotificationConfig(),
       );
 
+      // Create service with disabled TTS config
+      final serviceWithoutTts = CoreNotificationService(
+        settingsService: mockSettingsService,
+        config: configWithoutTts,
+        tts: mockTts,
+      );
+
       final response = NotificationResponse(
         notificationResponseType: NotificationResponseType.selectedNotification,
         id: 1,
@@ -230,13 +226,8 @@ void main() {
       );
 
       // Act
-      final statusFuture = statusController.stream.first;
-      service.onNotificationResponse(
-        response,
-        statusController,
-        configWithoutTts,
-        mockTts,
-      );
+      final statusFuture = serviceWithoutTts.statusStream.first;
+      serviceWithoutTts.onNotificationResponse(response);
 
       // Assert
       final status = await statusFuture;
@@ -245,6 +236,7 @@ void main() {
         AnnouncementStatus.completed,
         reason: 'Should emit completed status regardless of TTS configuration',
       );
+      await serviceWithoutTts.dispose();
     });
 
     test('handles multiple rapid notification responses correctly', () async {
@@ -274,15 +266,10 @@ void main() {
 
       // Act
       final statusList = <AnnouncementStatus>[];
-      statusController.stream.listen(statusList.add);
+      service.statusStream.listen(statusList.add);
 
       for (final response in responses) {
-        service.onNotificationResponse(
-          response,
-          statusController,
-          config,
-          mockTts,
-        );
+        service.onNotificationResponse(response);
       }
 
       // Allow async operations to complete
@@ -322,6 +309,7 @@ void main() {
 
       expect(
         () => CoreNotificationService.scheduleRecurringNotificationsImpl(
+          announcementId: 123,
           content: 'Test',
           recurrencePattern: RecurrencePattern.daily,
           customDays: [],
@@ -330,7 +318,6 @@ void main() {
           ),
           getAnnouncementHour: mockSettings.getAnnouncementHour,
           getAnnouncementMinute: mockSettings.getAnnouncementMinute,
-          setScheduledTimes: mockSettings.setScheduledTimes,
           getRecurringDates:
               ({
                 required recurrencePattern,
@@ -361,6 +348,7 @@ void main() {
 
         expect(
           () => CoreNotificationService.scheduleRecurringNotificationsImpl(
+            announcementId: 123,
             content: 'Test',
             recurrencePattern: RecurrencePattern.daily,
             customDays: [],
@@ -369,7 +357,6 @@ void main() {
             ),
             getAnnouncementHour: mockSettings.getAnnouncementHour,
             getAnnouncementMinute: mockSettings.getAnnouncementMinute,
-            setScheduledTimes: mockSettings.setScheduledTimes,
             getRecurringDates:
                 ({
                   required recurrencePattern,
@@ -400,6 +387,7 @@ void main() {
       List<int>? receivedDays;
 
       await CoreNotificationService.scheduleRecurringNotificationsImpl(
+        announcementId: 123,
         content: 'Test',
         recurrencePattern: RecurrencePattern.custom,
         customDays: [1, 3, 5],
@@ -408,7 +396,6 @@ void main() {
         ),
         getAnnouncementHour: mockSettings.getAnnouncementHour,
         getAnnouncementMinute: mockSettings.getAnnouncementMinute,
-        setScheduledTimes: mockSettings.setScheduledTimes,
         getRecurringDates:
             ({
               required recurrencePattern,
@@ -448,6 +435,7 @@ void main() {
       int? receivedMaxDays;
 
       await CoreNotificationService.scheduleRecurringNotificationsImpl(
+        announcementId: 123,
         content: 'Test',
         recurrencePattern: RecurrencePattern.weekdays,
         customDays: [],
@@ -456,7 +444,6 @@ void main() {
         ),
         getAnnouncementHour: mockSettings.getAnnouncementHour,
         getAnnouncementMinute: mockSettings.getAnnouncementMinute,
-        setScheduledTimes: mockSettings.setScheduledTimes,
         getRecurringDates:
             ({
               required recurrencePattern,
@@ -496,6 +483,7 @@ void main() {
       ];
 
       await CoreNotificationService.scheduleRecurringNotificationsImpl(
+        announcementId: 100,
         content: 'Daily reminder',
         recurrencePattern: RecurrencePattern.daily,
         customDays: [],
@@ -504,7 +492,6 @@ void main() {
         ),
         getAnnouncementHour: mockSettings.getAnnouncementHour,
         getAnnouncementMinute: mockSettings.getAnnouncementMinute,
-        setScheduledTimes: mockSettings.setScheduledTimes,
         getRecurringDates:
             ({
               required recurrencePattern,
@@ -549,13 +536,13 @@ void main() {
       );
       expect(
         scheduledNotifications[0].id,
-        equals(0),
-        reason: 'First notification should have ID 0',
+        equals(100),
+        reason: 'First notification should have ID 100 (base + 0)',
       );
       expect(
         scheduledNotifications[2].id,
-        equals(2),
-        reason: 'Third notification should have ID 2',
+        equals(102),
+        reason: 'Third notification should have ID 102 (base + 2)',
       );
     });
 
@@ -568,7 +555,12 @@ void main() {
         tz.TZDateTime.now(tz.local).add(const Duration(days: 2)),
       ];
 
+      // This test is no longer relevant as scheduleRecurringNotificationsImpl
+      // no longer handles storage directly. Storage is handled by the caller.
+      // We'll just verify it runs without error.
+
       await CoreNotificationService.scheduleRecurringNotificationsImpl(
+        announcementId: 123,
         content: 'Test',
         recurrencePattern: RecurrencePattern.daily,
         customDays: [],
@@ -577,7 +569,6 @@ void main() {
         ),
         getAnnouncementHour: mockSettings.getAnnouncementHour,
         getAnnouncementMinute: mockSettings.getAnnouncementMinute,
-        setScheduledTimes: mockSettings.setScheduledTimes,
         getRecurringDates:
             ({
               required recurrencePattern,
@@ -595,22 +586,6 @@ void main() {
             }) async {},
         scheduleUnattendedAnnouncement: (content, delay) {},
       );
-
-      expect(
-        mockSettings.storedTimes.length,
-        equals(2),
-        reason: 'Should store scheduled time for each notification',
-      );
-      expect(
-        mockSettings.storedTimes[0],
-        equals(testDates[0]),
-        reason: 'Should store correct time for first notification',
-      );
-      expect(
-        mockSettings.storedTimes[1],
-        equals(testDates[1]),
-        reason: 'Should store correct time for second notification',
-      );
     });
 
     test(
@@ -624,6 +599,7 @@ void main() {
         final testDates = [firstDate, now.add(const Duration(days: 1))];
 
         await CoreNotificationService.scheduleRecurringNotificationsImpl(
+          announcementId: 123,
           content: 'Morning announcement',
           recurrencePattern: RecurrencePattern.daily,
           customDays: [],
@@ -633,7 +609,6 @@ void main() {
           ),
           getAnnouncementHour: mockSettings.getAnnouncementHour,
           getAnnouncementMinute: mockSettings.getAnnouncementMinute,
-          setScheduledTimes: mockSettings.setScheduledTimes,
           getRecurringDates:
               ({
                 required recurrencePattern,
@@ -682,6 +657,7 @@ void main() {
         ];
 
         await CoreNotificationService.scheduleRecurringNotificationsImpl(
+          announcementId: 123,
           content: 'Test',
           recurrencePattern: RecurrencePattern.daily,
           customDays: [],
@@ -691,7 +667,6 @@ void main() {
           ),
           getAnnouncementHour: mockSettings.getAnnouncementHour,
           getAnnouncementMinute: mockSettings.getAnnouncementMinute,
-          setScheduledTimes: mockSettings.setScheduledTimes,
           getRecurringDates:
               ({
                 required recurrencePattern,
@@ -727,6 +702,7 @@ void main() {
       mockSettings.minute = 0;
 
       await CoreNotificationService.scheduleRecurringNotificationsImpl(
+        announcementId: 123,
         content: 'Test',
         recurrencePattern: RecurrencePattern.custom,
         customDays: [1],
@@ -735,7 +711,6 @@ void main() {
         ),
         getAnnouncementHour: mockSettings.getAnnouncementHour,
         getAnnouncementMinute: mockSettings.getAnnouncementMinute,
-        setScheduledTimes: mockSettings.setScheduledTimes,
         getRecurringDates:
             ({
               required recurrencePattern,
@@ -799,7 +774,7 @@ void main() {
         );
 
         final announcement = ScheduledAnnouncement(
-          id: '1',
+          id: 1,
           content: 'Morning reminder',
           scheduledTime: DateTime.now().add(const Duration(hours: 1)),
           isActive: true,
@@ -835,7 +810,7 @@ void main() {
         );
 
         final announcement = ScheduledAnnouncement(
-          id: '2',
+          id: 2,
           content: 'Afternoon reminder',
           scheduledTime: DateTime(2025, 11, 20, 14, 0),
           isActive: true,
@@ -846,31 +821,31 @@ void main() {
         final sameDay = DateTime(2025, 11, 20, 9, 0);
         final existingAnnouncements = [
           ScheduledAnnouncement(
-            id: '0',
+            id: 0,
             content: 'Existing 0',
             scheduledTime: sameDay,
             isActive: true,
           ),
           ScheduledAnnouncement(
-            id: '1',
+            id: 1,
             content: 'Existing 1',
             scheduledTime: sameDay.add(const Duration(hours: 1)),
             isActive: true,
           ),
           ScheduledAnnouncement(
-            id: '2',
+            id: 2,
             content: 'Existing 2',
             scheduledTime: sameDay.add(const Duration(hours: 2)),
             isActive: true,
           ),
           ScheduledAnnouncement(
-            id: '3',
+            id: 3,
             content: 'Existing 3',
             scheduledTime: sameDay.add(const Duration(hours: 3)),
             isActive: true,
           ),
           ScheduledAnnouncement(
-            id: '4',
+            id: 4,
             content: 'Existing 4',
             scheduledTime: sameDay.add(const Duration(days: 1)),
             isActive: true,
@@ -904,7 +879,7 @@ void main() {
         );
 
         final announcement = ScheduledAnnouncement(
-          id: '3',
+          id: 3,
           content: 'Weekly reminder',
           scheduledTime: DateTime.now().add(const Duration(days: 7)),
           isActive: true,
@@ -915,7 +890,7 @@ void main() {
         final existingAnnouncements = List.generate(
           49,
           (i) => ScheduledAnnouncement(
-            id: i.toString(),
+            id: i,
             content: 'Announcement $i',
             scheduledTime: DateTime.now().add(Duration(days: i)),
             isActive: true,
@@ -951,7 +926,7 @@ void main() {
         );
 
         final announcement = ScheduledAnnouncement(
-          id: '4',
+          id: 4,
           content: 'One too many',
           scheduledTime: DateTime(2025, 11, 20, 16, 0),
           isActive: true,
@@ -962,19 +937,19 @@ void main() {
         final sameDay = DateTime(2025, 11, 20, 9, 0);
         final existingAnnouncements = [
           ScheduledAnnouncement(
-            id: '0',
+            id: 0,
             content: 'Existing 0',
             scheduledTime: sameDay,
             isActive: true,
           ),
           ScheduledAnnouncement(
-            id: '1',
+            id: 1,
             content: 'Existing 1',
             scheduledTime: sameDay.add(const Duration(hours: 2)),
             isActive: true,
           ),
           ScheduledAnnouncement(
-            id: '2',
+            id: 2,
             content: 'Existing 2',
             scheduledTime: sameDay.add(const Duration(hours: 4)),
             isActive: true,
@@ -1004,7 +979,7 @@ void main() {
         );
 
         final announcement = ScheduledAnnouncement(
-          id: '5',
+          id: 5,
           content: 'Too many total',
           scheduledTime: DateTime.now().add(const Duration(days: 30)),
           isActive: true,
@@ -1015,7 +990,7 @@ void main() {
         final existingAnnouncements = List.generate(
           50,
           (i) => ScheduledAnnouncement(
-            id: i.toString(),
+            id: i,
             content: 'Announcement $i',
             scheduledTime: DateTime.now().add(Duration(days: i)),
             isActive: true,

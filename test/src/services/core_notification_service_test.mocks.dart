@@ -6,7 +6,7 @@
 import 'dart:async' as _i3;
 import 'dart:ui' as _i4;
 
-import 'package:announcement_scheduler/src/models/recurrence_pattern.dart'
+import 'package:announcement_scheduler/src/models/scheduled_announcement.dart'
     as _i7;
 import 'package:announcement_scheduler/src/services/scheduling_settings_service.dart'
     as _i6;
@@ -436,144 +436,50 @@ class MockSchedulingSettingsService extends _i1.Mock
           as _i3.Future<void>);
 
   @override
-  _i3.Future<bool> getIsRecurring() =>
+  _i3.Future<List<_i7.ScheduledAnnouncement>> getScheduledAnnouncements() =>
       (super.noSuchMethod(
-            Invocation.method(#getIsRecurring, []),
-            returnValue: _i3.Future<bool>.value(false),
-          )
-          as _i3.Future<bool>);
-
-  @override
-  _i3.Future<void> setIsRecurring(bool? isRecurring) =>
-      (super.noSuchMethod(
-            Invocation.method(#setIsRecurring, [isRecurring]),
-            returnValue: _i3.Future<void>.value(),
-            returnValueForMissingStub: _i3.Future<void>.value(),
-          )
-          as _i3.Future<void>);
-
-  @override
-  _i3.Future<bool> getIsRecurringPaused() =>
-      (super.noSuchMethod(
-            Invocation.method(#getIsRecurringPaused, []),
-            returnValue: _i3.Future<bool>.value(false),
-          )
-          as _i3.Future<bool>);
-
-  @override
-  _i3.Future<void> setIsRecurringPaused(bool? isPaused) =>
-      (super.noSuchMethod(
-            Invocation.method(#setIsRecurringPaused, [isPaused]),
-            returnValue: _i3.Future<void>.value(),
-            returnValueForMissingStub: _i3.Future<void>.value(),
-          )
-          as _i3.Future<void>);
-
-  @override
-  _i3.Future<bool> getIsRecurringActive() =>
-      (super.noSuchMethod(
-            Invocation.method(#getIsRecurringActive, []),
-            returnValue: _i3.Future<bool>.value(false),
-          )
-          as _i3.Future<bool>);
-
-  @override
-  _i3.Future<_i7.RecurrencePattern> getRecurrencePattern() =>
-      (super.noSuchMethod(
-            Invocation.method(#getRecurrencePattern, []),
-            returnValue: _i3.Future<_i7.RecurrencePattern>.value(
-              _i7.RecurrencePattern.daily,
+            Invocation.method(#getScheduledAnnouncements, []),
+            returnValue: _i3.Future<List<_i7.ScheduledAnnouncement>>.value(
+              <_i7.ScheduledAnnouncement>[],
             ),
           )
-          as _i3.Future<_i7.RecurrencePattern>);
+          as _i3.Future<List<_i7.ScheduledAnnouncement>>);
 
   @override
-  _i3.Future<void> setRecurrencePattern(_i7.RecurrencePattern? pattern) =>
-      (super.noSuchMethod(
-            Invocation.method(#setRecurrencePattern, [pattern]),
-            returnValue: _i3.Future<void>.value(),
-            returnValueForMissingStub: _i3.Future<void>.value(),
-          )
-          as _i3.Future<void>);
-
-  @override
-  _i3.Future<List<int>> getRecurrenceDays() =>
-      (super.noSuchMethod(
-            Invocation.method(#getRecurrenceDays, []),
-            returnValue: _i3.Future<List<int>>.value(<int>[]),
-          )
-          as _i3.Future<List<int>>);
-
-  @override
-  _i3.Future<void> setRecurrenceDays(List<int>? days) =>
-      (super.noSuchMethod(
-            Invocation.method(#setRecurrenceDays, [days]),
-            returnValue: _i3.Future<void>.value(),
-            returnValueForMissingStub: _i3.Future<void>.value(),
-          )
-          as _i3.Future<void>);
-
-  @override
-  _i3.Future<void> setRecurringConfig({
-    required bool? isRecurring,
-    _i7.RecurrencePattern? pattern = _i7.RecurrencePattern.daily,
-    List<int>? customDays,
-  }) =>
-      (super.noSuchMethod(
-            Invocation.method(#setRecurringConfig, [], {
-              #isRecurring: isRecurring,
-              #pattern: pattern,
-              #customDays: customDays,
-            }),
-            returnValue: _i3.Future<void>.value(),
-            returnValueForMissingStub: _i3.Future<void>.value(),
-          )
-          as _i3.Future<void>);
-
-  @override
-  _i3.Future<void> setScheduledTime(
-    int? notificationId,
-    DateTime? scheduledTime,
+  _i3.Future<void> setScheduledAnnouncements(
+    List<_i7.ScheduledAnnouncement>? announcements,
   ) =>
       (super.noSuchMethod(
-            Invocation.method(#setScheduledTime, [
-              notificationId,
-              scheduledTime,
-            ]),
+            Invocation.method(#setScheduledAnnouncements, [announcements]),
             returnValue: _i3.Future<void>.value(),
             returnValueForMissingStub: _i3.Future<void>.value(),
           )
           as _i3.Future<void>);
 
   @override
-  _i3.Future<DateTime?> getScheduledTime(int? notificationId) =>
+  _i3.Future<void> addScheduledAnnouncement(
+    _i7.ScheduledAnnouncement? announcement,
+  ) =>
       (super.noSuchMethod(
-            Invocation.method(#getScheduledTime, [notificationId]),
-            returnValue: _i3.Future<DateTime?>.value(),
-          )
-          as _i3.Future<DateTime?>);
-
-  @override
-  _i3.Future<Map<String, int>> getScheduledTimes() =>
-      (super.noSuchMethod(
-            Invocation.method(#getScheduledTimes, []),
-            returnValue: _i3.Future<Map<String, int>>.value(<String, int>{}),
-          )
-          as _i3.Future<Map<String, int>>);
-
-  @override
-  _i3.Future<void> setScheduledTimes(Map<int, DateTime>? scheduledTimes) =>
-      (super.noSuchMethod(
-            Invocation.method(#setScheduledTimes, [scheduledTimes]),
+            Invocation.method(#addScheduledAnnouncement, [announcement]),
             returnValue: _i3.Future<void>.value(),
             returnValueForMissingStub: _i3.Future<void>.value(),
           )
           as _i3.Future<void>);
 
   @override
-  _i3.Future<void> clearScheduledTimes() =>
+  _i3.Future<void> removeScheduledAnnouncement(int? announcementId) =>
       (super.noSuchMethod(
-            Invocation.method(#clearScheduledTimes, []),
+            Invocation.method(#removeScheduledAnnouncement, [announcementId]),
+            returnValue: _i3.Future<void>.value(),
+            returnValueForMissingStub: _i3.Future<void>.value(),
+          )
+          as _i3.Future<void>);
+
+  @override
+  _i3.Future<void> removeScheduledAnnouncements(List<int>? announcementIds) =>
+      (super.noSuchMethod(
+            Invocation.method(#removeScheduledAnnouncements, [announcementIds]),
             returnValue: _i3.Future<void>.value(),
             returnValueForMissingStub: _i3.Future<void>.value(),
           )

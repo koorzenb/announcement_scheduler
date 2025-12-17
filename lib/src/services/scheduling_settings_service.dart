@@ -1,4 +1,3 @@
-import '../models/recurrence_pattern.dart';
 import '../models/scheduled_announcement.dart';
 import 'storage_service.dart';
 
@@ -13,93 +12,17 @@ class SchedulingSettingsService {
 
   // Announcement time settings
   Future<int?> getAnnouncementHour() => _storage.get<int>('announcementHour');
-  Future<void> setAnnouncementHour(int hour) => _storage.set('announcementHour', hour);
+  Future<void> setAnnouncementHour(int hour) =>
+      _storage.set('announcementHour', hour);
 
-  Future<int?> getAnnouncementMinute() => _storage.get<int>('announcementMinute');
-  Future<void> setAnnouncementMinute(int minute) => _storage.set('announcementMinute', minute);
+  Future<int?> getAnnouncementMinute() =>
+      _storage.get<int>('announcementMinute');
+  Future<void> setAnnouncementMinute(int minute) =>
+      _storage.set('announcementMinute', minute);
 
   Future<void> setAnnouncementTime(int hour, int minute) async {
     await setAnnouncementHour(hour);
     await setAnnouncementMinute(minute);
-  }
-
-  // Recurring announcement settings
-  Future<bool> getIsRecurring() async => await _storage.get<bool>('isRecurring') ?? false;
-
-  Future<void> setIsRecurring(bool isRecurring) => _storage.set('isRecurring', isRecurring);
-
-  /// Pause/resume recurring without losing configuration
-  Future<bool> getIsRecurringPaused() async => await _storage.get<bool>('isRecurringPaused') ?? false;
-  Future<void> setIsRecurringPaused(bool isPaused) => _storage.set('isRecurringPaused', isPaused);
-
-  /// Check if recurring is enabled and not paused
-  Future<bool> getIsRecurringActive() async {
-    final isRecurring = await getIsRecurring();
-    final isPaused = await getIsRecurringPaused();
-    return isRecurring && !isPaused;
-  }
-
-  Future<RecurrencePattern> getRecurrencePattern() async {
-    final patternIndex = await _storage.get<int>('recurrencePattern');
-    if (patternIndex == null || patternIndex >= RecurrencePattern.values.length) {
-      return RecurrencePattern.daily; // Default pattern
-    }
-    return RecurrencePattern.values[patternIndex];
-  }
-
-  Future<void> setRecurrencePattern(RecurrencePattern pattern) => _storage.set('recurrencePattern', pattern.index);
-
-  Future<List<int>> getRecurrenceDays() async {
-    final days = await _storage.get<List<dynamic>>('recurrenceDays');
-    if (days == null) {
-      // Return default days for the current pattern
-      final pattern = await getRecurrencePattern();
-      return pattern.defaultDays;
-    }
-    return days.cast<int>();
-  }
-
-  Future<void> setRecurrenceDays(List<int> days) => _storage.set('recurrenceDays', days);
-
-  /// Set complete recurring configuration at once
-  Future<void> setRecurringConfig({required bool isRecurring, RecurrencePattern pattern = RecurrencePattern.daily, List<int>? customDays}) async {
-    await setIsRecurring(isRecurring);
-    await setRecurrencePattern(pattern);
-
-    // Set custom days if provided, otherwise use pattern defaults
-    final daysToSet = customDays ?? pattern.defaultDays;
-    await setRecurrenceDays(daysToSet);
-  }
-
-  // Scheduled times persistence
-  // Maps notification ID to scheduled time in milliseconds since epoch
-
-  Future<void> setScheduledTime(int notificationId, DateTime scheduledTime) async {
-    final times = await getScheduledTimes();
-    times[notificationId.toString()] = scheduledTime.millisecondsSinceEpoch;
-    await _storage.set('scheduledTimes', times);
-  }
-
-  Future<DateTime?> getScheduledTime(int notificationId) async {
-    final times = await getScheduledTimes();
-    final millis = times[notificationId.toString()];
-    if (millis == null) return null;
-    return DateTime.fromMillisecondsSinceEpoch(millis);
-  }
-
-  Future<Map<String, int>> getScheduledTimes() async {
-    final data = await _storage.get<Map<dynamic, dynamic>>('scheduledTimes');
-    if (data == null) return {};
-    return data.map((key, value) => MapEntry(key.toString(), value as int));
-  }
-
-  Future<void> setScheduledTimes(Map<int, DateTime> scheduledTimes) async {
-    final times = scheduledTimes.map((key, value) => MapEntry(key.toString(), value.millisecondsSinceEpoch));
-    await _storage.set('scheduledTimes', times);
-  }
-
-  Future<void> clearScheduledTimes() async {
-    await _storage.remove('scheduledTimes');
   }
 
   // Scheduled announcements persistence
@@ -140,14 +63,54 @@ class SchedulingSettingsService {
   ///
   /// Serializes each [ScheduledAnnouncement] to JSON and stores the
   /// resulting list. Replaces any previously stored announcements.
-  Future<void> setScheduledAnnouncements(List<ScheduledAnnouncement> announcements) async {
+  Future<void> setScheduledAnnouncements(
+    List<ScheduledAnnouncement> announcements,
+  ) async {
     final jsonList = announcements.map((a) => a.toJson()).toList();
     await _storage.set('scheduledAnnouncements', jsonList);
   }
 
+  /// Adds a single scheduled announcement to storage
+  ///
+  /// Retrieves the current list, appends the new announcement, and
+  /// stores the updated list. This is more efficient than loading
+  /// and replacing the entire list externally.
+  Future<void> addScheduledAnnouncement(
+    ScheduledAnnouncement announcement,
+  ) async {
+    final currentAnnouncements = await getScheduledAnnouncements();
+    currentAnnouncements.add(announcement);
+    await setScheduledAnnouncements(currentAnnouncements);
+  }
+
+  /// Removes a scheduled announcement from storage by ID
+  ///
+  /// Retrieves the current list, filters out the announcement with
+  /// the matching ID, and stores the updated list. No error if ID not found.
+  Future<void> removeScheduledAnnouncement(int announcementId) async {
+    final currentAnnouncements = await getScheduledAnnouncements();
+    final filteredAnnouncements = currentAnnouncements
+        .where((announcement) => announcement.id != announcementId)
+        .toList();
+    await setScheduledAnnouncements(filteredAnnouncements);
+  }
+
+  /// Removes multiple scheduled announcements from storage by IDs (bulk removal)
+  ///
+  /// Retrieves the current list, filters out announcements with IDs in the
+  /// provided list, and stores the updated list. Non-existing IDs are ignored.
+  /// This is more efficient than calling removeScheduledAnnouncement multiple times.
+  Future<void> removeScheduledAnnouncements(List<int> announcementIds) async {
+    final currentAnnouncements = await getScheduledAnnouncements();
+    final filteredAnnouncements = currentAnnouncements
+        .where((announcement) => !announcementIds.contains(announcement.id))
+        .toList();
+    await setScheduledAnnouncements(filteredAnnouncements);
+  }
+
   /// Clear all settings
   Future<void> clearSettings() async {
-    await _storage.clear();
+    await _storage.remove('scheduledAnnouncements');
   }
 
   /// Dispose of resources

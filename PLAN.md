@@ -1,4 +1,5 @@
 # Development Plan
+
 ## Announcement Scheduler Package
 
 **Version**: 0.1.0  
@@ -21,6 +22,7 @@ The current implementation of `scheduleRecurringAnnouncement()` uses shared sett
 ### Root Cause
 
 The service treats recurring settings as **singleton configuration** rather than **per-announcement data**. Methods like:
+
 - `_settingsService.setIsRecurring(true)` - overwrites for all announcements
 - `_settingsService.setRecurrencePattern(recurrence)` - overwrites pattern
 - `_settingsService.setRecurrenceDays(customDays)` - overwrites custom days
@@ -40,6 +42,7 @@ The service treats recurring settings as **singleton configuration** rather than
 Replace the current `Map<String, int>` scheduled times storage with a full `List<ScheduledAnnouncement>` persistence layer:
 
 **Before** (Current):
+
 ```dart
 // Only stores notification ID → scheduled time (milliseconds)
 Map<String, int> scheduledTimes = {
@@ -49,6 +52,7 @@ Map<String, int> scheduledTimes = {
 ```
 
 **After** (Proposed):
+
 ```dart
 // Stores complete announcement data
 List<ScheduledAnnouncement> scheduledAnnouncements = [
@@ -135,6 +139,7 @@ List<ScheduledAnnouncement> scheduledAnnouncements = [
   - Test edge cases (null metadata, empty custom days, etc.)
 
 **Acceptance Criteria**:
+
 - ✅ `ScheduledAnnouncement` can be serialized to JSON
 - ✅ `ScheduledAnnouncement` can be deserialized from JSON
 - ✅ All tests pass with `reason` property
@@ -159,33 +164,33 @@ List<ScheduledAnnouncement> scheduledAnnouncements = [
   - Serialize each announcement to JSON
   - Store as `List<Map<String, dynamic>>` in storage
   
-- [ ] **Task 2.3**: Add `addScheduledAnnouncement()` helper method
+- [x] **Task 2.3**: Add `addScheduledAnnouncement()` helper method
   - Retrieve current list
   - Append new announcement
   - Store updated list
   - Optimize to avoid loading/saving entire list if needed
   
-- [ ] **Task 2.4**: Add `removeScheduledAnnouncement()` helper method
+- [x] **Task 2.4**: Add `removeScheduledAnnouncement()` helper method
   - Accept announcement ID
   - Retrieve current list
   - Filter out announcement with matching ID
   - Store updated list
   
-- [ ] **Task 2.5**: Add `removeScheduledAnnouncements()` bulk removal method
+- [x] **Task 2.5**: Add `removeScheduledAnnouncements()` bulk removal method ✅
   - Accept `List<String>` of IDs to remove
   - Retrieve current list
   - Filter out all announcements with matching IDs
   - Store updated list
   - Use for cleanup/reconciliation
   
-- [ ] **Task 2.6**: Remove old scheduled times methods
+- [x] **Task 2.6**: Remove old scheduled times methods ✅
   - Remove `getScheduledTime(int notificationId)`
   - Remove `setScheduledTime(int notificationId, DateTime scheduledTime)`
   - Remove `getScheduledTimes()`
   - Remove `setScheduledTimes(Map<int, DateTime> scheduledTimes)`
   - Remove `clearScheduledTimes()`
   
-- [ ] **Task 2.7**: Remove singleton recurring settings methods
+- [x] **Task 2.7**: Remove singleton recurring settings methods ✅
   - Remove `getIsRecurring()` and `setIsRecurring(bool)`
   - Remove `getIsRecurringPaused()` and `setIsRecurringPaused(bool)`
   - Remove `getIsRecurringActive()`
@@ -194,11 +199,11 @@ List<ScheduledAnnouncement> scheduledAnnouncements = [
   - Remove `setRecurringConfig()`
   - **Keep** `getAnnouncementHour()`, `setAnnouncementHour()`, `getAnnouncementMinute()`, `setAnnouncementMinute()`, `setAnnouncementTime()`
   
-- [ ] **Task 2.8**: Update `clearSettings()` method
+- [x] **Task 2.8**: Update `clearSettings()` method ✅
   - Remove old storage key clearing (methods removed)
   - Clear new `scheduledAnnouncements` storage key only
   
-- [ ] **Task 2.9**: Write unit tests for storage methods
+- [x] **Task 2.9**: Write unit tests for storage methods ✅
   - Test `getScheduledAnnouncements()` with empty storage
   - Test `getScheduledAnnouncements()` with existing data
   - Test `setScheduledAnnouncements()` persistence
@@ -209,6 +214,7 @@ List<ScheduledAnnouncement> scheduledAnnouncements = [
   - All tests use `expect` with `reason` property
 
 **Acceptance Criteria**:
+
 - ✅ Can persist `List<ScheduledAnnouncement>` to storage
 - ✅ Can retrieve `List<ScheduledAnnouncement>` from storage
 - ✅ Can add/remove individual announcements
@@ -222,41 +228,41 @@ List<ScheduledAnnouncement> scheduledAnnouncements = [
 
 **Goal**: Change scheduling methods to persist full `ScheduledAnnouncement` objects.
 
-- [ ] **Task 3.1**: Update `scheduleRecurringAnnouncement()` signature
+- [x] **Task 3.1**: Update `scheduleRecurringAnnouncement()` signature ✅
   - Add optional `String? id` parameter (generate if null)
   - Add optional `Map<String, dynamic>? metadata` parameter
   - Keep existing parameters (content, announcementTime, recurrence, customDays)
   
-- [ ] **Task 3.2**: Generate unique announcement ID if not provided
+- [x] **Task 3.2**: Generate unique announcement ID if not provided ✅
   - Use `DateTime.now().millisecondsSinceEpoch.toString()` as default
   - This ID serves as the base for ALL notification IDs (one-time and recurring)
   - Ensure uniqueness (timestamp guarantees no collisions)
   - Document unified ID strategy: announcement ID = notification ID base
   
-- [ ] **Task 3.3**: Create `ScheduledAnnouncement` object in method
+- [x] **Task 3.3**: Create `ScheduledAnnouncement` object in method ✅
   - Build announcement with all provided parameters
   - Calculate first `scheduledTime` from `announcementTime`
   - Set `recurrence` and `customDays` from parameters
   - Set `isActive: true` by default
   - Include `metadata` if provided
   
-- [ ] **Task 3.4**: Remove singleton setting calls (already removed in Phase 2)
+- [x] **Task 3.4**: Remove singleton setting calls (already removed in Phase 2) ✅
   - Verify no calls to removed methods
   - ✅ Keep `_settingsService.setAnnouncementTime()` for default time
   
-- [ ] **Task 3.5**: Persist announcement using new storage
+- [x] **Task 3.5**: Persist announcement using new storage ✅
   - Call `_settingsService.addScheduledAnnouncement(announcement)`
   - Store before or after scheduling platform notifications
   - Handle errors during storage
   
-- [ ] **Task 3.6**: Update internal scheduling methods
+- [x] **Task 3.6**: Update internal scheduling methods ✅
   - Pass announcement ID to `_scheduleRecurringNotifications()`
   - Derive notification IDs from announcement ID:
     - For recurring: `int.parse(announcementId) + dayOffset` (e.g., base + 0, base + 1, base + 2...)
     - Ensures all notifications for same announcement share common base ID
   - Update `scheduleRecurringNotificationsImpl()` to accept announcement ID parameter
   
-- [ ] **Task 3.7**: Write unit tests for updated method
+- [x] **Task 3.7**: Write unit tests for updated method ✅
   - Test announcement creation with all parameters
   - Test ID generation when not provided
   - Test persistence to storage
@@ -264,6 +270,7 @@ List<ScheduledAnnouncement> scheduledAnnouncements = [
   - All tests use `expect` with `reason` property
 
 **Acceptance Criteria**:
+
 - ✅ `scheduleRecurringAnnouncement()` persists full `ScheduledAnnouncement`
 - ✅ Old singleton settings methods not called
 - ✅ Unique ID generation works
@@ -275,8 +282,8 @@ List<ScheduledAnnouncement> scheduledAnnouncements = [
 
 **Goal**: Apply same pattern to one-time announcements.
 
-- [ ] **Task 4.1**: Update `scheduleOneTimeAnnouncement()` signature
-  - Add optional `String? id` parameter (generate if null)
+- [x] **Task 4.1**: Update `scheduleOneTimeAnnouncement()` signature
+  - Add optional `int? id` parameter (generate if null)
   - Add optional `Map<String, dynamic>? metadata` parameter
   - Keep existing parameters (content, dateTime)
   
@@ -305,6 +312,7 @@ List<ScheduledAnnouncement> scheduledAnnouncements = [
   - All tests use `expect` with `reason` property
 
 **Acceptance Criteria**:
+
 - ✅ `scheduleOneTimeAnnouncement()` persists full `ScheduledAnnouncement`
 - ✅ One-time and recurring announcements use same persistence model
 - ✅ All tests pass
@@ -352,6 +360,7 @@ List<ScheduledAnnouncement> scheduledAnnouncements = [
   - All tests use `expect` with `reason` property
 
 **Acceptance Criteria**:
+
 - ✅ Platform notifications remain source of truth for lifecycle
 - ✅ Storage provides rich metadata
 - ✅ Automatic cleanup of stale data
@@ -385,6 +394,7 @@ List<ScheduledAnnouncement> scheduledAnnouncements = [
   - All tests use `expect` with `reason` property
 
 **Acceptance Criteria**:
+
 - ✅ Cleanup uses new storage methods
 - ✅ Completed announcements removed from storage
 - ✅ Active announcements preserved
@@ -411,6 +421,7 @@ List<ScheduledAnnouncement> scheduledAnnouncements = [
   - All tests use `expect` with `reason` property
 
 **Acceptance Criteria**:
+
 - ✅ Cancellation removes from both platform and storage
 - ✅ Non-existent IDs handled gracefully
 - ✅ All tests pass
@@ -438,6 +449,7 @@ List<ScheduledAnnouncement> scheduledAnnouncements = [
   - All tests use `expect` with `reason` property
 
 **Acceptance Criteria**:
+
 - ✅ All notifications cancelled on platform
 - ✅ All announcements cleared from storage
 - ✅ Timers cleaned up
@@ -481,6 +493,7 @@ List<ScheduledAnnouncement> scheduledAnnouncements = [
   - All tests use `expect` with `reason` property
 
 **Acceptance Criteria**:
+
 - ✅ Internal methods use announcement ID
 - ✅ Notification IDs derived from announcement ID
 - ✅ Old storage methods not called
@@ -519,6 +532,7 @@ List<ScheduledAnnouncement> scheduledAnnouncements = [
   - Note removed singleton methods
 
 **Acceptance Criteria**:
+
 - ✅ All method signatures documented accurately
 - ✅ Architecture explanation provided
 - ✅ Examples updated
@@ -549,6 +563,7 @@ List<ScheduledAnnouncement> scheduledAnnouncements = [
   - Update related documents list
 
 **Acceptance Criteria**:
+
 - ✅ PRD reflects new architecture accurately
 - ✅ Known issues section updated
 - ✅ Technical details current
@@ -596,6 +611,7 @@ List<ScheduledAnnouncement> scheduledAnnouncements = [
 - [ ] **Task 12.7**: All integration tests use `expect` with `reason` property
 
 **Acceptance Criteria**:
+
 - ✅ All integration tests pass
 - ✅ End-to-end functionality verified
 - ✅ Edge cases covered
@@ -622,6 +638,7 @@ List<ScheduledAnnouncement> scheduledAnnouncements = [
 ### Test Patterns
 
 Follow existing test patterns:
+
 - Use dependency injection (Strategy Pattern)
 - Use `@visibleForTesting` setters for fake implementations
 - Mock at service boundaries, not internal methods
@@ -632,6 +649,7 @@ Follow existing test patterns:
 ## Architecture Change Summary
 
 ### Old Architecture (Singleton Settings)
+
 ```dart
 // Singleton recurring settings (shared across all announcements)
 await scheduler.scheduleRecurringAnnouncement(
@@ -645,6 +663,7 @@ await scheduler.scheduleRecurringAnnouncement(
 ```
 
 ### New Architecture (Per-Announcement Configuration)
+
 ```dart
 // Per-announcement configuration with unique ID
 await scheduler.scheduleRecurringAnnouncement(
@@ -701,6 +720,7 @@ for (final announcement in announcements) {
 ## Success Criteria
 
 ### Technical Success
+
 - ✅ All unit tests pass with ≥70% coverage
 - ✅ All integration tests pass
 - ✅ `flutter analyze` passes with 0 errors/warnings
@@ -709,12 +729,14 @@ for (final announcement in announcements) {
 - ✅ Automatic reconciliation and cleanup works correctly
 
 ### Architectural Success
+
 - ✅ No singleton recurring settings (cleanly removed)
 - ✅ Each announcement has independent configuration
 - ✅ `getScheduledAnnouncements()` returns accurate metadata
 - ✅ Validation works with per-announcement data
 
 ### Documentation Success
+
 - ✅ `API_REFERENCE.md` updated with new signatures
 - ✅ `PRD.md` reflects new architecture
 - ✅ Architecture changes clearly documented

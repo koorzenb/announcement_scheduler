@@ -223,14 +223,14 @@ void main() {
 
     test('ScheduledAnnouncement identifies recurring vs one-time', () {
       final recurring = ScheduledAnnouncement(
-        id: 'test_recurring',
+        id: 1,
         content: 'Test',
         scheduledTime: DateTime.now(),
         recurrence: RecurrencePattern.daily,
       );
 
       final oneTime = ScheduledAnnouncement(
-        id: 'test_onetime',
+        id: 2,
         content: 'Test',
         scheduledTime: DateTime.now(),
       );
@@ -259,14 +259,14 @@ void main() {
 
     test('ScheduledAnnouncement returns effective days correctly', () {
       final daily = ScheduledAnnouncement(
-        id: 'test',
+        id: 1,
         content: 'Test',
         scheduledTime: DateTime.now(),
         recurrence: RecurrencePattern.daily,
       );
 
       final custom = ScheduledAnnouncement(
-        id: 'test',
+        id: 2,
         content: 'Test',
         scheduledTime: DateTime.now(),
         recurrence: RecurrencePattern.custom,
@@ -274,7 +274,7 @@ void main() {
       );
 
       final oneTime = ScheduledAnnouncement(
-        id: 'test',
+        id: 3,
         content: 'Test',
         scheduledTime: DateTime.now(),
       );
