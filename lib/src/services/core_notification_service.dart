@@ -465,6 +465,11 @@ class CoreNotificationService {
         await _settingsService.removeScheduledAnnouncements(staleIds);
       }
 
+      // Sort by scheduled time (earliest first)
+      activeAnnouncements.sort(
+        (a, b) => a.scheduledTime.compareTo(b.scheduledTime),
+      );
+
       return activeAnnouncements;
     } catch (e) {
       throw NotificationSchedulingException(

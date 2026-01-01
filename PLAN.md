@@ -342,15 +342,15 @@ List<ScheduledAnnouncement> scheduledAnnouncements = [
   - Stored announcement exists but no platform notification: cleanup (already handled)
   - Empty pending notifications: return empty list and cleanup all storage
   
-- [ ] **Task 5.5**: Update return value
+- [x] **Task 5.5**: Update return value
   - Return filtered `List<ScheduledAnnouncement>` with rich metadata
   - Sorted by `scheduledTime` (earliest first)
   
-- [ ] **Task 5.6**: Update implementation
+- [x] **Task 5.6**: Update implementation
   - Use stored announcements from new storage
   - Remove manual `ScheduledAnnouncement` construction from notification data
   
-- [ ] **Task 5.7**: Write unit tests
+- [x] **Task 5.7**: Write unit tests
   - Test reconciliation with matching IDs
   - Test cleanup of stale announcements
   - Test edge case: platform notification without stored announcement
@@ -373,7 +373,7 @@ List<ScheduledAnnouncement> scheduledAnnouncements = [
 
 **Goal**: Ensure `_cleanupCompletedAnnouncements()` uses new storage.
 
-- [ ] **Task 6.1**: Review current `_cleanupCompletedAnnouncements()` implementation
+- [x] **Task 6.1**: Review current `_cleanupCompletedAnnouncements()` implementation
   - Identify calls to deprecated storage methods
   - Understand current cleanup strategy
   
