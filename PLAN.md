@@ -382,12 +382,12 @@ List<ScheduledAnnouncement> scheduledAnnouncements = [
   - Cleanup is now automatic during retrieval
   - Consider if explicit cleanup method is still needed
   
-- [ ] **Task 6.3**: Update cleanup trigger
+- [x] **Task 6.3**: Update cleanup trigger
   - Review `_setupCleanupListener()` and status stream
   - Ensure cleanup happens after `AnnouncementStatus.completed`
   - Test cleanup occurs at right time
   
-- [ ] **Task 6.4**: Write unit tests
+- [x] **Task 6.4**: Write unit tests
   - Test cleanup on completed status
   - Test cleanup removes correct announcements
   - Test cleanup doesn't remove active announcements

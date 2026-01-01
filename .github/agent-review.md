@@ -76,6 +76,7 @@ For each code change, verify:
 - [ ] Public APIs have `///` documentation
 - [ ] Enums used instead of string constants
 - [ ] Proper async/await usage
+- [ ] **Centralized Constants**: Shared constants moved to `app_constants.dart`
 - [ ] No hardcoded values (use constants)
 - [ ] **Command-Query Separation**: Getters/retrievers have no side effects
 - [ ] **Explicit Intent**: Cleanup/maintenance logic is explicit, not hidden

@@ -99,6 +99,12 @@ class MyClass {
 - **Functions**: Maximum 30-50 lines
 - **Solution**: Extract helper methods
 
+#### Centralized Constants
+
+- **Rule**: Move shared constants to `lib/utils/app_constants.dart`
+- **Usage**: Import and use `AppConstants.myValue`
+- **Scope**: Private constants (`_const`) can remain in the class if not shared
+
 ### Clean Code Principles
 
 - **Command-Query Separation (CQS)**:

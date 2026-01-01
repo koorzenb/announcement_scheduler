@@ -35,6 +35,10 @@ class CoreNotificationService {
   static const String _defaultChannelDescription =
       'Automated text-to-speech announcements';
 
+  // Scheduling constants
+  static const int _maxSchedulingDays = 14; // Android system limitation
+  static const int _reconciliationLookaheadDays = 30; // Safe buffer > max days
+
   // Validation constants to prevent excessive notification load (used by validation config)
 
   final FlutterLocalNotificationsPlugin _notifications;
@@ -425,32 +429,11 @@ class CoreNotificationService {
       final matchedPendingIds = <int>{};
 
       for (final announcement in storedAnnouncements) {
-        bool isStillActive = false;
-
-        // Check if any notification related to this announcement exists
-        final baseId = announcement.id;
-
-        if (announcement.isOneTime) {
-          // One-time: Check exact ID match
-          if (pendingIds.contains(baseId)) {
-            isStillActive = true;
-            matchedPendingIds.add(baseId);
-          }
-        } else {
-          // Recurring: Check if any notification derived from this ID exists
-          // We check a reasonable range (e.g. base to base + 30)
-          // Since we schedule up to 14 days ahead, 30 is safe.
-          for (int i = 0; i < 30; i++) {
-            final idToCheck = baseId + i;
-            if (pendingIds.contains(idToCheck)) {
-              isStillActive = true;
-              matchedPendingIds.add(idToCheck);
-              // Continue checking to find all matches for orphan detection
-            }
-          }
-        }
-
-        if (isStillActive) {
+        if (_isAnnouncementActive(
+          announcement,
+          pendingIds,
+          matchedPendingIds,
+        )) {
           activeAnnouncements.add(announcement);
         } else {
           staleIds.add(announcement.id);
@@ -488,6 +471,37 @@ class CoreNotificationService {
         'Failed to get scheduled announcements: $e',
       );
     }
+  }
+
+  /// Check if an announcement is still active in pending notifications
+  bool _isAnnouncementActive(
+    ScheduledAnnouncement announcement,
+    Set<int> pendingIds,
+    Set<int> matchedPendingIds,
+  ) {
+    bool isActive = false;
+    final baseId = announcement.id;
+
+    if (announcement.isOneTime) {
+      // One-time: Check exact ID match
+      if (pendingIds.contains(baseId)) {
+        isActive = true;
+        matchedPendingIds.add(baseId);
+      }
+    } else {
+      // Recurring: Check if any notification derived from this ID exists
+      // We check a reasonable range (e.g. base to base + 30)
+      // Since we schedule up to 14 days ahead, 30 is safe.
+      for (int i = 0; i < _reconciliationLookaheadDays; i++) {
+        final idToCheck = baseId + i;
+        if (pendingIds.contains(idToCheck)) {
+          isActive = true;
+          matchedPendingIds.add(idToCheck);
+          // Continue checking to find all matches for orphan detection
+        }
+      }
+    }
+    return isActive;
   }
 
   /// Dispose of resources
@@ -745,7 +759,7 @@ class CoreNotificationService {
       recurrencePattern: recurrencePattern,
       customDays: customDays,
       startDate: baseScheduledTime,
-      maxDays: 14, // Android system limitation
+      maxDays: _maxSchedulingDays, // Android system limitation
     );
 
     for (int i = 0; i < daysToSchedule.length; i++) {
