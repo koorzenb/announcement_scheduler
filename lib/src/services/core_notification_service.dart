@@ -385,6 +385,7 @@ class CoreNotificationService {
   Future<void> cancelAnnouncementById(int id) async {
     try {
       await _notifications.cancel(id);
+      await _settingsService.removeScheduledAnnouncement(id);
     } catch (e) {
       throw NotificationSchedulingException(
         'Failed to cancel announcement: $e',

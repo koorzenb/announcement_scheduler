@@ -406,15 +406,15 @@ List<ScheduledAnnouncement> scheduledAnnouncements = [
 
 **Goal**: Update cancellation to remove from new storage.
 
-- [ ] **Task 7.1**: Review current `cancelAnnouncementById()` implementation
+- [x] **Task 7.1**: Review current `cancelAnnouncementById()` implementation
   - Identify storage cleanup calls
   
-- [ ] **Task 7.2**: Add storage removal
+- [x] **Task 7.2**: Add storage removal
   - Parse ID to int if needed
   - Call `_notifications.cancel(id)` (already exists)
   - Call `_settingsService.removeScheduledAnnouncement(id)`
   
-- [ ] **Task 7.3**: Write unit tests
+- [x] **Task 7.3**: Write unit tests
   - Test cancellation removes from platform
   - Test cancellation removes from storage
   - Test cancelling non-existent ID (graceful handling)
