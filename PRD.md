@@ -291,7 +291,27 @@ This package implements **programmatic validation limits** as a best practice to
 | TTS initialization time | < 500 ms | ✅ ~300 ms |
 | Battery drain per day | < 1% | ✅ ~0.5% |
 
-### 4.6 Code Quality Requirements
+### 4.7 Persistence and Reconciliation
+
+**Persistence Model**:
+- **Storage**: Uses `Hive` for local persistence of `ScheduledAnnouncement` objects.
+- **Data Structure**: Stores complete announcement metadata (ID, content, recurrence pattern, custom days, etc.) independently of platform notifications.
+- **Purpose**: Enables accurate retrieval of scheduled announcements, as Android's `PendingNotificationRequest` API does not expose scheduled times or custom metadata.
+
+**Reconciliation Strategy**:
+- **Source of Truth**: Platform notifications (Android/iOS system) are the ultimate source of truth for *active* notifications.
+- **Process**:
+  1. Retrieve all stored announcements from Hive.
+  2. Retrieve all pending notification requests from the platform.
+  3. Filter stored announcements to keep only those with matching pending notification IDs.
+  4. Automatically remove "stale" announcements (those in storage but not in platform pending list) to keep data in sync.
+- **Benefit**: Ensures the app always displays an accurate list of what is *actually* scheduled, handling cases where the system might have cancelled notifications (e.g., user action, system cleanup).
+
+**Platform Limitations**:
+- **Android**: `PendingNotificationRequest` only provides ID, title, body, and payload. It does *not* provide the scheduled trigger time.
+- **Solution**: The package's persistence layer bridges this gap by storing the scheduled time and reconciling it with the active notification ID.
+
+### 4.8 Code Quality Requirements
 
 - ✅ Flutter analyze: 0 errors, 0 warnings
 - ✅ Test coverage: 70%+ (currently 28 tests passing)
@@ -357,7 +377,8 @@ This package implements **programmatic validation limits** as a best practice to
 
 **Expected Outcome**:
 - Returns list of `ScheduledAnnouncement` objects
-- Shows correct scheduled times (⚠️ **Known Issue**: Currently shows creation time, not scheduled time - see PLAN.md Phase 1)
+- Shows correct scheduled times and recurrence patterns
+- Automatically filters out stale or cancelled announcements via reconciliation
 
 ### 5.5 Workflow: Cancel Announcements
 
@@ -471,6 +492,8 @@ try {
 - **Exact Alarm**: Android permission for precise timing
 - **Boot Receiver**: Android component that reschedules after reboot
 - **Hive**: Lightweight local storage solution
+- **Reconciliation**: The process of synchronizing stored announcement data with the platform's active notification list to ensure accuracy.
+- **Persistence Layer**: The storage mechanism (Hive) used to save announcement metadata that the platform notification system does not retain.
 
 ### 8.2 Related Documents
 

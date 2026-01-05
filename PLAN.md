@@ -544,21 +544,21 @@ List<ScheduledAnnouncement> scheduledAnnouncements = [
 
 **Goal**: Update Product Requirements Document to reflect architectural changes.
 
-- [ ] **Task 11.1**: Update Technical Requirements section
+- [x] **Task 11.1**: Update Technical Requirements section
   - Document new persistence model
   - Explain reconciliation strategy
   - Update platform limitation notes
   
-- [ ] **Task 11.2**: Update User Workflows section
+- [x] **Task 11.2**: Update User Workflows section
   - Update "View Scheduled Announcements" workflow
   - Remove note about known issue (creation time vs. scheduled time)
   - Update to reflect accurate metadata retrieval
   
-- [ ] **Task 11.3**: Update Configuration Reference
+- [x] **Task 11.3**: Update Configuration Reference
   - Note that recurring settings are now per-announcement
   - Remove singleton recurring configuration guidance
   
-- [ ] **Task 11.4**: Update Appendix
+- [x] **Task 11.4**: Update Appendix
   - Add glossary terms (reconciliation, persistence layer, etc.)
   - Update related documents list
 
