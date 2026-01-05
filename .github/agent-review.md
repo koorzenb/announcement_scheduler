@@ -47,6 +47,14 @@ Refer to `.github/project-config.md` for:
 - Function length limits and refactoring guidelines
 - Testing requirements and patterns
 
+**Refactoring Verification**:
+When reviewing refactored code, explicitly check for:
+- Methods or variables that became unused due to the changes
+- Callsites that were redirected, leaving the original target obsolete
+- Recommend **Removal** for internal unused code
+- Recommend **Deprecation** (`@deprecated`) for public unused APIs
+- Recommend **Retention** (with `@visibleForTesting`) if useful for tests/future
+
 ### Security & Best Practices
 
 - **API Keys**: Never hardcode secrets (use `flutter_dotenv`)
@@ -80,6 +88,7 @@ For each code change, verify:
 - [ ] No hardcoded values (use constants)
 - [ ] **Command-Query Separation**: Getters/retrievers have no side effects
 - [ ] **Explicit Intent**: Cleanup/maintenance logic is explicit, not hidden
+- [ ] **Dead Code Analysis**: Check for unused methods/variables after refactoring (recommend remove/deprecate)
 
 ### ✅ Architecture & Patterns
 

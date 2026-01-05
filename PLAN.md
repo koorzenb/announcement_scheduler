@@ -432,17 +432,17 @@ List<ScheduledAnnouncement> scheduledAnnouncements = [
 
 **Goal**: Update bulk cancellation to clear new storage.
 
-- [ ] **Task 8.1**: Review current `cancelAllNotifications()` implementation
+- [x] **Task 8.1**: Review current `cancelAllNotifications()` implementation
   - Identify old storage clearing calls
   
-- [ ] **Task 8.2**: Update storage clearing
+- [x] **Task 8.2**: Update storage clearing
   - Keep `_notifications.cancelAll()` (already exists)
   - ✅ Use `_settingsService.setScheduledAnnouncements([])` (clear list)
   
-- [ ] **Task 8.3**: Clear timer tracking
+- [x] **Task 8.3**: Clear timer tracking
   - Ensure active timers still cancelled (already exists)
   
-- [ ] **Task 8.4**: Write unit tests
+- [x] **Task 8.4**: Write unit tests
   - Test all platform notifications cancelled
   - Test all stored announcements cleared
   - Test timers cancelled

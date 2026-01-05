@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 import '../models/scheduled_announcement.dart';
 import 'storage_service.dart';
 
@@ -109,6 +111,10 @@ class SchedulingSettingsService {
   }
 
   /// Clear all settings
+  ///
+  /// **Note**: This method is currently unused in the core logic but kept for
+  /// API completeness and potential future use (e.g., "Factory Reset" feature).
+  @visibleForTesting
   Future<void> clearSettings() async {
     await _storage.remove('scheduledAnnouncements');
   }

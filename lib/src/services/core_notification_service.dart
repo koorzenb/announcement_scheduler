@@ -373,7 +373,7 @@ class CoreNotificationService {
       }
       _activeAnnouncementTimers.clear();
 
-      await _settingsService.clearSettings();
+      await _settingsService.setScheduledAnnouncements([]);
     } catch (e) {
       throw NotificationSchedulingException(
         'Failed to cancel notifications: $e',
