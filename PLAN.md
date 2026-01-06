@@ -574,41 +574,41 @@ List<ScheduledAnnouncement> scheduledAnnouncements = [
 
 **Goal**: Comprehensive testing of new architecture end-to-end.
 
-- [ ] **Task 12.1**: Write integration test: Multiple recurring announcements
+- [x] **Task 12.1**: Write integration test: Multiple recurring announcements
   - Schedule 3 different recurring announcements with different patterns
   - Verify each has unique ID
   - Verify each persisted correctly
   - Retrieve announcements and verify all metadata correct
   
-- [ ] **Task 12.2**: Write integration test: Mix of one-time and recurring
+- [x] **Task 12.2**: Write integration test: Mix of one-time and recurring
   - Schedule 2 one-time and 2 recurring announcements
   - Verify correct persistence
   - Verify `getScheduledAnnouncements()` returns all 4
   - Verify metadata accurate for each type
   
-- [ ] **Task 12.3**: Write integration test: Cancellation
+- [x] **Task 12.3**: Write integration test: Cancellation
   - Schedule multiple announcements
   - Cancel one by ID
   - Verify removed from platform and storage
   - Verify others unaffected
   
-- [ ] **Task 12.4**: Write integration test: Cleanup
+- [x] **Task 12.4**: Write integration test: Cleanup
   - Schedule announcement
   - Manually trigger completion status
   - Verify cleanup removes from storage
   
-- [ ] **Task 12.5**: Write integration test: Reconciliation
+- [x] **Task 12.5**: Write integration test: Reconciliation
   - Schedule announcements
   - Manually remove one from platform (simulate completion)
   - Call `getScheduledAnnouncements()`
   - Verify removed from storage (automatic cleanup)
   
-- [ ] **Task 12.6**: Write integration test: Validation limits
+- [x] **Task 12.6**: Write integration test: Validation limits
   - Schedule announcements up to `maxNotificationsPerDay`
   - Verify next one throws `ValidationException`
   - Verify validation uses per-announcement data
   
-- [ ] **Task 12.7**: All integration tests use `expect` with `reason` property
+- [x] **Task 12.7**: All integration tests use `expect` with `reason` property
 
 **Acceptance Criteria**:
 

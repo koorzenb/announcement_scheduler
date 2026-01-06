@@ -198,6 +198,10 @@ class CoreNotificationService {
       return announcementId;
     } catch (e) {
       _statusController.add(AnnouncementStatus.failed);
+      debugPrint(
+        '[CoreNotificationService] scheduleOneTimeAnnouncement: Error scheduling announcement: $e',
+      );
+      if (e is ValidationException) rethrow;
       throw NotificationSchedulingException(
         'Failed to schedule one-time announcement: $e',
       );
@@ -205,7 +209,7 @@ class CoreNotificationService {
   }
 
   int _generateId([int? id]) {
-    if (id != null) return id;
+    if (id != null) return id % 2147483647;
 
     // Generate a unique ID that fits in a 32-bit integer (for Android notifications)
     // We use the last 9 digits of millisecondsSinceEpoch to ensure uniqueness within a reasonable timeframe

@@ -1,7 +1,7 @@
 # Announcement Scheduler
 
-A Flutter package for scheduling text-to-speech announcements with support for
-one-time and recurring notifications.
+A Flutter package for scheduling announcements with support for
+one-time, recurring notifications and text-to-speech.
 
 ## Features
 
@@ -245,10 +245,12 @@ No additional setup required. Permissions are requested automatically.
 
 ```dart
 // Get all scheduled announcements
-final announcements = await scheduler.getScheduledAnnouncements();
+final announcements = await scheduler.getScheduledAnnouncements(); //
 
-// Cancel a specific announcement
-await scheduler.cancelAnnouncementById('announcement_id');
+// Cancel a specific announcement (using the ID from the scheduled announcement)
+if (announcements.isNotEmpty) {
+  await scheduler.cancelAnnouncementById(announcements.first.id); // using the first ScheduledAnnouncement's ID, but could be any ID
+}
 
 // Cancel all announcements
 await scheduler.cancelScheduledAnnouncements();
