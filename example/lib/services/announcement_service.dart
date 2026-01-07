@@ -81,6 +81,50 @@ class AnnouncementService {
     );
   }
 
+  /// Schedule a one-time announcement
+  Future<int> scheduleOnceOff({
+    required String content,
+    required DateTime dateTime,
+    Map<String, dynamic>? metadata,
+  }) async {
+    return await _scheduler.scheduleOneTimeAnnouncement(
+      content: content,
+      dateTime: dateTime,
+      metadata: metadata,
+    );
+  }
+
+  /// Schedule a daily recurrent announcement
+  Future<int> scheduleDaily({
+    required String content,
+    required TimeOfDay time,
+    Map<String, dynamic>? metadata,
+  }) async {
+    return await _scheduler.scheduleAnnouncement(
+      content: content,
+      announcementTime: time,
+      recurrence: RecurrencePattern.daily,
+      metadata: metadata,
+    );
+  }
+
+  /// Schedule a weekly announcement on specific days
+  /// [weekdays] should be a list of integers where 1=Monday, 7=Sunday
+  Future<int> scheduleWeekly({
+    required String content,
+    required TimeOfDay time,
+    required List<int> weekdays,
+    Map<String, dynamic>? metadata,
+  }) async {
+    return await _scheduler.scheduleAnnouncement(
+      content: content,
+      announcementTime: time,
+      recurrence: RecurrencePattern.custom,
+      customDays: weekdays,
+      metadata: metadata,
+    );
+  }
+
   /// Cancel all scheduled announcements
   Future<void> cancelAllAnnouncements() async {
     await _scheduler.cancelScheduledAnnouncements();
