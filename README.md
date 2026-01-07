@@ -32,30 +32,37 @@ flutter pub get
 
 ## Quick Start
 
-```dart
-import 'package:announcement_scheduler/announcement_scheduler.dart';
-import 'package:flutter/material.dart';
+The recommended way to use this package is by creating a dedicated service to manage initialization and scheduling. This ensures proper handling of permissions and configuration.
 
+### 1. Initialize in Main
+
+```dart
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   
-  // Initialize the scheduler
-  final scheduler = await AnnouncementScheduler.initialize(
-    config: AnnouncementConfig(
-      notificationConfig: NotificationConfig(
-        channelId: 'daily_reminders',
-        channelName: 'Daily Reminders',
-        channelDescription: 'Daily motivational announcements',
+  try {
+    // Initialize the service
+    final service = await AnnouncementService.create(
+      // See AnnouncementConfig below for configuration options
+      config: AnnouncementConfig(   
+        notificationConfig: NotificationConfig(
+          channelId: 'daily_reminders',
+          channelName: 'Daily Reminders',
+          channelDescription: 'Daily motivational announcements',
+        ),
       ),
-    ),
-  );
+    );
 
-  // Schedule a daily announcement
-  await scheduler.scheduleAnnouncement(
-    content: 'Good morning! Time to start your day with positive energy!', // This is the content that will be announced and appear in the notification
-    announcementTime: TimeOfDay(hour: 8, minute: 0), 
-    recurrence: RecurrencePattern.daily, 
-  );
+    // Schedule announcements using your service methods
+    await service.scheduleWeekly(
+      content: 'Time for your workout!',
+      announcementTime: TimeOfDay(hour: 7, minute: 0),
+      daysOfWeek: [1, 3, 5], // Monday, Wednesday, Friday
+    );
+    
+  } catch (e) {
+    print('Failed to initialize: $e');
+  }
 
   runApp(MyApp());
 }
@@ -97,34 +104,28 @@ final config = AnnouncementConfig(
 Support for various recurring patterns:
 
 ```dart
-// Daily announcements
-await scheduler.scheduleAnnouncement(
-  content: 'Daily reminder',
-  announcementTime: TimeOfDay(hour: 9, minute: 0),
-  recurrence: RecurrencePattern.daily,
-);
-
-// Weekdays only
-await scheduler.scheduleAnnouncement(
-  content: 'Weekday motivation',
-  announcementTime: TimeOfDay(hour: 7, minute: 30),
-  recurrence: RecurrencePattern.weekdays,
-);
-
-// Custom days (Monday, Wednesday, Friday)
-await scheduler.scheduleAnnouncement(
-  content: 'Custom schedule',
-  announcementTime: TimeOfDay(hour: 6, minute: 0),
-  recurrence: RecurrencePattern.custom,
-  customDays: [1, 3, 5], // 1=Monday, 2=Tuesday, etc.
-);
-
-// One-time announcement
-await scheduler.scheduleOneTimeAnnouncement(
-  content: 'Special announcement',
+// Once off
+await service.scheduleOnceOff(
+  content: 'One-time reminder!',
   dateTime: DateTime.now().add(Duration(hours: 2)),
 );
 ```
+
+```dart
+// Daily
+await service.scheduleDaily(
+  content: 'Daily reminder!',
+  announcementTime: TimeOfDay(hour: 9, minute: 0),
+);  
+```
+
+```dart
+// Weekly (on specific days)
+await service.scheduleWeekly(
+  content: 'Weekly reminder!',
+  announcementTime: TimeOfDay(hour: 10, minute: 0),
+  daysOfWeek: [1, 3, 5], // Monday, Wednesday, Friday
+);
 
 ### Timezone Configuration
 
