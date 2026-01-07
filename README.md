@@ -52,9 +52,9 @@ void main() async {
 
   // Schedule a daily announcement
   await scheduler.scheduleAnnouncement(
-    content: 'Good morning! Time to start your day with positive energy!',
-    announcementTime: TimeOfDay(hour: 8, minute: 0),
-    recurrence: RecurrencePattern.daily,
+    content: 'Good morning! Time to start your day with positive energy!', // This is the content that will be announced and appear in the notification
+    announcementTime: TimeOfDay(hour: 8, minute: 0), 
+    recurrence: RecurrencePattern.daily, 
   );
 
   runApp(MyApp());

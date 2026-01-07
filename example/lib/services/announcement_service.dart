@@ -46,7 +46,7 @@ class AnnouncementService {
       throw Exception('Notification permission not granted');
     }
 
-    _scheduler = await AnnouncementScheduler.initialize(
+    _scheduler = await AnnouncementScheduler.create(
       config: AnnouncementConfig(
         enableTTS: true,
         ttsRate: 0.5,

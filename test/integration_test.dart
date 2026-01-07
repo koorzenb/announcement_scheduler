@@ -112,7 +112,7 @@ void main() {
       // We need to initialize the core service manually since we are injecting it
       await coreService.initialize();
 
-      scheduler = await AnnouncementScheduler.initialize(
+      scheduler = await AnnouncementScheduler.create(
         config: effectiveConfig,
         notificationService: coreService,
       );

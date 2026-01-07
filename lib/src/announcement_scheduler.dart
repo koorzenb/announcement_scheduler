@@ -168,7 +168,7 @@ class AnnouncementScheduler {
   /// - [AnnouncementConfig] for configuration details
   /// - [NotificationConfig] for notification channel settings
   /// - [ValidationConfig] for validation rules
-  static Future<AnnouncementScheduler> initialize({
+  static Future<AnnouncementScheduler> create({
     required AnnouncementConfig config,
     CoreNotificationService? notificationService,
   }) async {
@@ -604,7 +604,7 @@ class AnnouncementScheduler {
   /// - Releasing system resources
   ///
   /// After calling [dispose], the [AnnouncementScheduler] instance should not
-  /// be used anymore. Create a new instance via [initialize] if needed.
+  /// be used anymore. Create a new instance via [create] if needed.
   ///
   /// Note: This does NOT cancel scheduled announcements. Call
   /// [cancelScheduledAnnouncements] first if you want to cancel announcements.
@@ -627,7 +627,7 @@ class AnnouncementScheduler {
   /// See also:
   ///
   /// - [cancelScheduledAnnouncements] to cancel pending announcements
-  /// - [initialize] to create a new scheduler instance
+  /// - [create] to create a new scheduler instance
   Future<void> dispose() async {
     await _notificationService!.dispose();
   }

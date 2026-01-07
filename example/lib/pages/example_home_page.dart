@@ -20,13 +20,6 @@ class ExampleHomePage extends StatelessWidget {
       }
     });
 
-    return _buildScaffold(controller, context);
-  }
-
-  Widget _buildScaffold(
-    ExamplePageController controller,
-    BuildContext context,
-  ) {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Announcement Scheduler Example'),

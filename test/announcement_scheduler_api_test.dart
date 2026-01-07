@@ -35,7 +35,7 @@ void main() {
   setUp(() async {
     mockNotificationService = MockCoreNotificationService();
 
-    scheduler = await AnnouncementScheduler.initialize(
+    scheduler = await AnnouncementScheduler.create(
       config: const AnnouncementConfig(
         notificationConfig: NotificationConfig(),
       ),
