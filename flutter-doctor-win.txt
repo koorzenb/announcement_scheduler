@@ -1,0 +1,31 @@
+[√] Flutter (Channel stable, 3.38.5, on Microsoft Windows [Version 10.0.26200.7462], locale en-CA) [650ms]
+    • Flutter version 3.38.5 on channel stable at C:\Users\koorz\fvm\versions\3.38.5
+    • Upstream repository https://github.com/flutter/flutter.git
+    • Framework revision f6ff1529fd (4 weeks ago), 2025-12-11 11:50:07 -0500
+    • Engine revision 1527ae0ec5
+    • Dart version 3.10.4
+    • DevTools version 2.51.1
+    • Feature flags: enable-web, enable-linux-desktop, enable-macos-desktop, enable-windows-desktop, enable-android, enable-ios, cli-animations, enable-native-assets, omit-legacy-version-file, enable-lldb-debugging
+
+• No issues found!
+Showing outdated packages.
+[*] indicates versions that are not the latest available.
+
+Package Name              Current   Upgradable  Resolvable  Latest   
+
+direct dependencies:     
+timezone                  *0.10.1   *0.10.1     *0.10.1     0.11.0   // flutter_local_notifications requires downgraded package
+
+dev_dependencies: all up-to-date.
+
+transitive dependencies: 
+characters                *1.4.0    *1.4.0      *1.4.0      1.4.1    
+material_color_utilities  *0.11.1   *0.11.1     *0.11.1     0.13.0   
+
+transitive dev_dependencies:
+_fe_analyzer_shared       *92.0.0   *92.0.0     *92.0.0     93.0.0   
+analyzer                  *9.0.0    *9.0.0      *9.0.0      10.0.0   
+matcher                   *0.12.17  *0.12.17    *0.12.17    0.12.18  
+test_api                  *0.7.7    *0.7.7      *0.7.7      0.7.9    
+You are already using the newest resolvable versions listed in the 'Resolvable' column.
+Newer versions, listed in 'Latest', may not be mutually compatible.

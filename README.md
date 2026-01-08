@@ -9,7 +9,7 @@ one-time, recurring notifications and text-to-speech.
 recurring patterns
 - 🔄 **Recurring Patterns**: Daily, weekdays, weekends, or custom day selections
 - 🔊 **Text-to-Speech**: Built-in TTS support with configurable voice settings
-- 📱 **Single-Platform**: Currently only Android support. 
+- 📱 **Single-Platform**: Currently only Android support.
 - ⚙️ **Configurable**: Extensive configuration options for notifications and TTS
 - 🛡️ **Validation**: Built-in validation to prevent excessive notifications
 - 🌍 **Timezone Support**: Timezone-aware scheduling with optional forced
