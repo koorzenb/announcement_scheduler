@@ -1,27 +1,27 @@
-import 'package:announcement_scheduler/src/announcement_scheduler.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../announcement_scheduler.dart';
 import '../models/announcement_config.dart';
 import '../models/notification_status.dart';
 import '../models/recurrence_pattern.dart';
 import '../models/scheduled_notification.dart';
 
-/// Service class that encapsulates all [NotificationScheduler] operations.
+/// Service class that encapsulates all [AnnouncementScheduler] operations.
 ///
 /// Follows the Service/Repository pattern to separate data access from UI.
 /// This service handles permission requests before initializing the scheduler.
-class NotificationService {
-  final NotificationScheduler _scheduler;
+class AnnouncementService {
+  final AnnouncementScheduler _scheduler;
 
   // Private constructor
-  NotificationService._(this._scheduler);
+  AnnouncementService._(this._scheduler);
 
-  /// Create and initialize the [NotificationService].
+  /// Create and initialize the [AnnouncementService].
   ///
   /// This method will check for notification permissions and request them if needed.
   /// Throws an [Exception] if permissions are not granted.
-  static Future<NotificationService> create({
+  static Future<AnnouncementService> create({
     required AnnouncementConfig config,
   }) async {
     // Check notification permissions first
@@ -34,9 +34,9 @@ class NotificationService {
       throw Exception('Notification permission not granted');
     }
 
-    final scheduler = await NotificationScheduler.create(config: config);
+    final scheduler = await AnnouncementScheduler.create(config: config);
 
-    return NotificationService._(scheduler);
+    return AnnouncementService._(scheduler);
   }
 
   /// Stream of status updates from the scheduler.

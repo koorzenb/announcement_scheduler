@@ -28,7 +28,7 @@ void main() {
     late SchedulingSettingsService settingsService;
     late MockFlutterLocalNotificationsPlugin mockNotifications;
     late MockFlutterTts mockTts;
-    late NotificationScheduler scheduler;
+    late AnnouncementScheduler scheduler;
 
     late List<PendingNotificationRequest> pendingNotifications;
 
@@ -118,7 +118,7 @@ void main() {
       // We need to initialize the core service manually since we are injecting it
       await coreService.initialize();
 
-      scheduler = await NotificationScheduler.create(
+      scheduler = await AnnouncementScheduler.create(
         config: effectiveConfig,
         notificationService: coreService,
       );

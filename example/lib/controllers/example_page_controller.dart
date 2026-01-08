@@ -1,12 +1,12 @@
+import 'package:announcement_scheduler/announcement_scheduler.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:notification_scheduler/notification_scheduler.dart';
 
 /// Controller/ViewModel that manages the business logic and state for the example page
 /// Uses GetX for reactive state management following the GetX pattern
 class ExamplePageController extends GetxController {
-  NotificationService?
-  _notificationService; // this can be null while initialization is in progress. Need a way to represent uninitialized state in UI.
+  AnnouncementService?
+  _announcementService; // this can be null while initialization is in progress. Need a way to represent uninitialized state in UI.
 
   final _isInitializing = false.obs;
   final _errorMessage = Rxn<String>();
@@ -25,7 +25,7 @@ class ExamplePageController extends GetxController {
 
   // Getters for state (GetX reactive)
   bool get isInitializing => _isInitializing.value;
-  bool get isSchedulerInitialized => _notificationService != null;
+  bool get isSchedulerInitialized => _announcementService != null;
   String? get errorMessage => _errorMessage.value;
   bool get hasError => _errorMessage.value != null;
 
@@ -35,7 +35,7 @@ class ExamplePageController extends GetxController {
     _errorMessage.value = null;
 
     try {
-      _notificationService = await NotificationService.create(
+      _announcementService = await AnnouncementService.create(
         config: AnnouncementConfig(
           enableTTS: true,
           ttsRate: 0.5,
@@ -57,7 +57,7 @@ class ExamplePageController extends GetxController {
       );
 
       // Listen to status updates
-      _notificationService!.statusStream.listen((status) {
+      _announcementService!.statusStream.listen((status) {
         debugPrint('Announcement status: $status');
       });
     } catch (e) {
@@ -72,7 +72,7 @@ class ExamplePageController extends GetxController {
   Future<bool> scheduleExampleAnnouncements() async {
     _errorMessage.value = null;
 
-    if (_notificationService == null) return false;
+    if (_announcementService == null) return false;
 
     try {
       await _scheduleExampleAnnouncements();
@@ -87,19 +87,19 @@ class ExamplePageController extends GetxController {
     final now = DateTime.now();
 
     // Schedule a one-time announcement 1 minute from now
-    await _notificationService!.scheduleOnceOff(
+    await _announcementService!.scheduleOnceOff(
       content: 'This is a one-time announcement 5 seconds ago.',
       dateTime: now.add(const Duration(seconds: 5)),
       metadata: {'type': 'one-time'},
     );
 
-    await _notificationService!.scheduleDaily(
+    await _announcementService!.scheduleDaily(
       content: 'Good morning! This is your daily announcement at 9:00 AM.',
       time: const TimeOfDay(hour: 9, minute: 0),
       metadata: {'type': 'daily'},
     );
 
-    await _notificationService!.scheduleWeekly(
+    await _announcementService!.scheduleWeekly(
       content: 'Happy Odd Day! This is your weekly announcement at 5:00 PM.',
       time: const TimeOfDay(hour: 17, minute: 0),
       weekdays: [1, 3, 5, 7], // Odd days
@@ -111,10 +111,10 @@ class ExamplePageController extends GetxController {
   Future<bool> cancelAllAnnouncements() async {
     _errorMessage.value = null;
 
-    if (_notificationService == null) return false;
+    if (_announcementService == null) return false;
 
     try {
-      await _notificationService!.cancelAllAnnouncements();
+      await _announcementService!.cancelAllAnnouncements();
       return true;
     } catch (e) {
       _errorMessage.value = 'Failed to cancel announcements: $e';
@@ -126,10 +126,10 @@ class ExamplePageController extends GetxController {
   Future<List<ScheduledNotification>> getScheduledAnnouncements() async {
     _errorMessage.value = null;
 
-    if (_notificationService == null) return [];
+    if (_announcementService == null) return [];
 
     try {
-      return await _notificationService!.getScheduledAnnouncements();
+      return await _announcementService!.getScheduledAnnouncements();
     } catch (e) {
       _errorMessage.value = 'Failed to load announcements: $e';
       return [];
@@ -138,7 +138,7 @@ class ExamplePageController extends GetxController {
 
   @override
   void onClose() {
-    _notificationService?.dispose();
+    _announcementService?.dispose();
     super.onClose();
   }
 }

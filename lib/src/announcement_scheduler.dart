@@ -15,7 +15,7 @@ import 'services/scheduling_settings_service.dart';
 
 /// Main entry point for the announcement scheduler package.
 ///
-/// [NotificationScheduler] provides a clean API for scheduling both one-time
+/// [AnnouncementScheduler] provides a clean API for scheduling both one-time
 /// and recurring text-to-speech announcements using local notifications.
 ///
 /// ## Features
@@ -81,7 +81,7 @@ import 'services/scheduling_settings_service.dart';
 /// - [RecurrencePattern] for recurring announcement patterns
 /// - [ScheduledNotification] for announcement data model
 /// - [NotificationStatus] for announcement lifecycle states
-class NotificationScheduler {
+class AnnouncementScheduler {
   final AnnouncementConfig _config;
   final CoreNotificationService? _notificationService;
   DateTime Function(
@@ -92,7 +92,7 @@ class NotificationScheduler {
   )
   _calculateNextOccurrence;
 
-  NotificationScheduler._({
+  AnnouncementScheduler._({
     required AnnouncementConfig config,
     CoreNotificationService? notificationService,
     DateTime Function(
@@ -109,7 +109,7 @@ class NotificationScheduler {
 
   /// Initialize the announcement scheduler with the given configuration.
   ///
-  /// This is the primary factory method for creating an [NotificationScheduler]
+  /// This is the primary factory method for creating an [AnnouncementScheduler]
   /// instance. It must be called before any scheduling operations.
   ///
   /// The method performs the following initialization steps:
@@ -132,7 +132,7 @@ class NotificationScheduler {
   ///
   /// ## Returns
   ///
-  /// A [Future] that completes with a fully initialized [NotificationScheduler]
+  /// A [Future] that completes with a fully initialized [AnnouncementScheduler]
   /// instance ready to schedule announcements.
   ///
   /// ## Throws
@@ -168,7 +168,7 @@ class NotificationScheduler {
   /// - [AnnouncementConfig] for configuration details
   /// - [NotificationConfig] for notification channel settings
   /// - [ValidationConfig] for validation rules
-  static Future<NotificationScheduler> create({
+  static Future<AnnouncementScheduler> create({
     required AnnouncementConfig config,
     CoreNotificationService? notificationService,
   }) async {
@@ -205,7 +205,7 @@ class NotificationScheduler {
       await service.initialize();
     }
 
-    return NotificationScheduler._(
+    return AnnouncementScheduler._(
       config: config,
       notificationService: service,
     );
@@ -595,7 +595,7 @@ class NotificationScheduler {
 
   /// Dispose resources and clean up.
   ///
-  /// This method should be called when the [NotificationScheduler] is no
+  /// This method should be called when the [AnnouncementScheduler] is no
   /// longer needed. It performs cleanup including:
   ///
   /// - Closing the status stream
@@ -603,7 +603,7 @@ class NotificationScheduler {
   /// - Canceling active timers
   /// - Releasing system resources
   ///
-  /// After calling [dispose], the [NotificationScheduler] instance should not
+  /// After calling [dispose], the [AnnouncementScheduler] instance should not
   /// be used anymore. Create a new instance via [create] if needed.
   ///
   /// Note: This does NOT cancel scheduled announcements. Call

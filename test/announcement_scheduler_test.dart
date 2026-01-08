@@ -1,5 +1,5 @@
+import 'package:announcement_scheduler/announcement_scheduler.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:announcement_scheduler/notification_scheduler.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -449,7 +449,7 @@ void main() {
     test('Public API exports are accessible', () {
       // Verify all expected types are exported and accessible
       expect(
-        NotificationScheduler,
+        AnnouncementScheduler,
         isNotNull,
         reason: 'AnnouncementScheduler should be exported',
       );

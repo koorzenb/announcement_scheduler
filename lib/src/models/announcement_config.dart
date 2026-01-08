@@ -1,4 +1,4 @@
-import '../../notification_scheduler.dart';
+import '../../announcement_scheduler.dart';
 
 /// Configuration for the announcement scheduler.
 ///

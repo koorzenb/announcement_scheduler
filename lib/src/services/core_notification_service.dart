@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:announcement_scheduler/src/models/notification_status.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -10,6 +9,7 @@ import 'package:timezone/timezone.dart' as tz;
 
 import '../models/announcement_config.dart';
 import '../models/announcement_exceptions.dart';
+import '../models/notification_status.dart';
 import '../models/recurrence_pattern.dart';
 import '../models/scheduled_notification.dart';
 import 'scheduling_settings_service.dart';

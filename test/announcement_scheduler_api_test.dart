@@ -1,4 +1,4 @@
-import 'package:announcement_scheduler/notification_scheduler.dart';
+import 'package:announcement_scheduler/announcement_scheduler.dart';
 import 'package:announcement_scheduler/src/services/core_notification_service.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
@@ -30,12 +30,12 @@ class MockCoreNotificationService extends Mock
 
 void main() {
   late MockCoreNotificationService mockNotificationService;
-  late NotificationScheduler scheduler;
+  late AnnouncementScheduler scheduler;
 
   setUp(() async {
     mockNotificationService = MockCoreNotificationService();
 
-    scheduler = await NotificationScheduler.create(
+    scheduler = await AnnouncementScheduler.create(
       config: const AnnouncementConfig(
         notificationConfig: NotificationConfig(),
       ),
