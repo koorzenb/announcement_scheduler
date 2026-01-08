@@ -1,8 +1,8 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:notification_scheduler/src/models/recurrence_pattern.dart';
-import 'package:notification_scheduler/src/models/scheduled_notification.dart';
-import 'package:notification_scheduler/src/services/scheduling_settings_service.dart';
-import 'package:notification_scheduler/src/services/storage_service.dart';
+import 'package:announcement_scheduler/src/models/recurrence_pattern.dart';
+import 'package:announcement_scheduler/src/models/scheduled_notification.dart';
+import 'package:announcement_scheduler/src/services/scheduling_settings_service.dart';
+import 'package:announcement_scheduler/src/services/storage_service.dart';
 
 /// Mock implementation of IStorageService for testing
 class MockStorageService implements IStorageService {

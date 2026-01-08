@@ -6,6 +6,10 @@
 import 'dart:async' as _i4;
 import 'dart:ui' as _i11;
 
+import 'package:announcement_scheduler/src/models/scheduled_notification.dart'
+    as _i14;
+import 'package:announcement_scheduler/src/services/scheduling_settings_service.dart'
+    as _i13;
 import 'package:flutter/services.dart' as _i12;
 import 'package:flutter_local_notifications/src/flutter_local_notifications_plugin.dart'
     as _i3;
@@ -20,10 +24,6 @@ import 'package:flutter_local_notifications_platform_interface/flutter_local_not
     as _i6;
 import 'package:flutter_tts/flutter_tts.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:notification_scheduler/src/models/scheduled_notification.dart'
-    as _i14;
-import 'package:notification_scheduler/src/services/scheduling_settings_service.dart'
-    as _i13;
 import 'package:timezone/timezone.dart' as _i8;
 
 // ignore_for_file: type=lint

@@ -1,10 +1,10 @@
 import 'dart:async';
 
+import 'package:announcement_scheduler/src/models/notification_status.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_tts/flutter_tts.dart';
-import 'package:notification_scheduler/src/models/notification_status.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 

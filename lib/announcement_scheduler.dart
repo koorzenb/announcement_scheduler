@@ -7,7 +7,7 @@
 ///
 /// Example usage:
 /// ```dart
-/// import 'package:notification_scheduler/notification_scheduler.dart';
+/// import 'package:announcement_scheduler/announcement_scheduler.dart';
 ///
 /// final scheduler = await notificationScheduler.create(
 ///   config: notificationConfig(
@@ -39,5 +39,5 @@ export 'src/models/recurrence_pattern.dart';
 export 'src/models/scheduled_notification.dart';
 export 'src/models/validation_config.dart';
 // Export public API
-export 'src/notification_scheduler.dart';
+export 'src/announcement_scheduler.dart';
 export 'src/services/notification_service.dart';

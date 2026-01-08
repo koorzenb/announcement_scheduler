@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:notification_scheduler/src/models/recurrence_pattern.dart';
-import 'package:notification_scheduler/src/models/scheduled_notification.dart';
+import 'package:announcement_scheduler/src/models/recurrence_pattern.dart';
+import 'package:announcement_scheduler/src/models/scheduled_notification.dart';
 
 void main() {
   group('ScheduledAnnouncement Serialization', () {

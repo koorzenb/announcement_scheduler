@@ -1,3 +1,4 @@
+import 'package:announcement_scheduler/src/announcement_scheduler.dart';
 import 'package:flutter/material.dart';
 import 'package:permission_handler/permission_handler.dart';
 
@@ -5,7 +6,6 @@ import '../models/announcement_config.dart';
 import '../models/notification_status.dart';
 import '../models/recurrence_pattern.dart';
 import '../models/scheduled_notification.dart';
-import '../notification_scheduler.dart';
 
 /// Service class that encapsulates all [NotificationScheduler] operations.
 ///
