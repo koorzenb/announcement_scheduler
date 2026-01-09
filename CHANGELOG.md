@@ -2,6 +2,13 @@
 # Changelog
 
 
+
+## [1.0.2] - 2026-01-08
+  
+### Enhancement
+  
+- Improved Example App for pub.dev
+
 ## [1.0.1] - 2026-01-08
   
 ### Chore
