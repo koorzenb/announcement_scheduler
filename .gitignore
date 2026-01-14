@@ -63,3 +63,6 @@ app.*.map.json
 set-build-env.bat
 update_version.dart
 update-flutter-info.bat
+
+# Development Plans
+PLAN.md
