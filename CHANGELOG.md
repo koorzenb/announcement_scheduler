@@ -6,6 +6,13 @@
 
 
 
+
+## [1.3.0] - 2026-01-14
+  
+### Ci
+  
+- Add CI workflow for analyzing, testing
+
 ## [1.2.0] - 2026-01-14
   
 ### Docs
