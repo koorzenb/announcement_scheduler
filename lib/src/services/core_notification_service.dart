@@ -108,7 +108,7 @@ class CoreNotificationService {
     );
 
     final initialized = await _notifications.initialize(
-      initSettings,
+      settings: initSettings,
       onDidReceiveNotificationResponse: onNotificationResponse,
       onDidReceiveBackgroundNotificationResponse:
           _onBackgroundNotificationResponse,
@@ -392,7 +392,7 @@ class CoreNotificationService {
   /// Cancel a specific announcement by ID
   Future<void> cancelAnnouncementById(int id) async {
     try {
-      await _notifications.cancel(id);
+      await _notifications.cancel(id: id);
       await _settingsService.removeScheduledAnnouncement(id);
     } catch (e) {
       throw NotificationSchedulingException(
@@ -877,11 +877,11 @@ class CoreNotificationService {
     // For one-time notifications, DO NOT use matchDateTimeComponents
     // This ensures the notification fires exactly once at the specified date/time
     await _notifications.zonedSchedule(
-      notificationId,
-      title,
-      content,
-      scheduledDate,
-      platformDetails,
+      id: notificationId,
+      title: title,
+      body: content,
+      scheduledDate: scheduledDate,
+      notificationDetails: platformDetails,
       androidScheduleMode: scheduleMode,
       payload: content, // Add payload so notification response can trigger TTS
     );
@@ -964,11 +964,11 @@ class CoreNotificationService {
     }
 
     await _notifications.zonedSchedule(
-      notificationId,
-      title,
-      content,
-      scheduledDate,
-      platformDetails,
+      id: notificationId,
+      title: title,
+      body: content,
+      scheduledDate: scheduledDate,
+      notificationDetails: platformDetails,
       androidScheduleMode: scheduleMode,
       matchDateTimeComponents:
           matchDateTimeComponents ?? DateTimeComponents.time,

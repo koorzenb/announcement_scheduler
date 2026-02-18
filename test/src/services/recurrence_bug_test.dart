@@ -44,11 +44,11 @@ void main() {
       ).thenAnswer((_) async => []);
       when(
         mockNotifications.zonedSchedule(
-          any,
-          any,
-          any,
-          any,
-          any,
+          id: anyNamed('id'),
+          title: anyNamed('title'),
+          body: anyNamed('body'),
+          scheduledDate: anyNamed('scheduledDate'),
+          notificationDetails: anyNamed('notificationDetails'),
           androidScheduleMode: anyNamed('androidScheduleMode'),
           matchDateTimeComponents: anyNamed('matchDateTimeComponents'),
           payload: anyNamed('payload'),
@@ -82,11 +82,11 @@ void main() {
 
         final verification = verify(
           mockNotifications.zonedSchedule(
-            any,
-            any,
-            any,
-            any,
-            any,
+            id: anyNamed('id'),
+            title: anyNamed('title'),
+            body: anyNamed('body'),
+            scheduledDate: anyNamed('scheduledDate'),
+            notificationDetails: anyNamed('notificationDetails'),
             androidScheduleMode: anyNamed('androidScheduleMode'),
             matchDateTimeComponents: captureAnyNamed('matchDateTimeComponents'),
             payload: anyNamed('payload'),
@@ -120,11 +120,11 @@ void main() {
         // Assert
         final verification = verify(
           mockNotifications.zonedSchedule(
-            any,
-            any,
-            any,
-            any,
-            any,
+            id: anyNamed('id'),
+            title: anyNamed('title'),
+            body: anyNamed('body'),
+            scheduledDate: anyNamed('scheduledDate'),
+            notificationDetails: anyNamed('notificationDetails'),
             androidScheduleMode: anyNamed('androidScheduleMode'),
             matchDateTimeComponents: captureAnyNamed('matchDateTimeComponents'),
             payload: anyNamed('payload'),

@@ -1,6 +1,6 @@
 name: announcement_scheduler
 description: A Flutter package for scheduling text-to-speech announcements with support for one-time and recurring notifications.
-version: 1.3.0
+version: 1.4.0
 homepage: https://github.com/koorzenb/announcement_scheduler
 repository: https://github.com/koorzenb/announcement_scheduler
 issue_tracker: https://github.com/koorzenb/announcement_scheduler/issues
@@ -12,9 +12,9 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_local_notifications: ^19.5.0
+  flutter_local_notifications: ^20.1.0
   flutter_tts: ^4.2.5
-  timezone: ^0.10.0
+  timezone: ^0.10.0 # cannot be updated to 0.11.0 due to flutter_local_notifications dependency
   hive_flutter: ^1.1.0
   get: ^4.7.3
   permission_handler: ^12.0.1
@@ -22,9 +22,9 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  build_runner: ^2.4.11
+  build_runner: ^2.11.1
   flutter_lints: ^6.0.0
-  flutter_local_notifications_platform_interface: ^9.1.0
+  flutter_local_notifications_platform_interface: ^10.0.0
   mockito: ^5.4.4
   pub_semver: ^2.2.0
 

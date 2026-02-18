@@ -6,6 +6,10 @@
 import 'dart:async' as _i3;
 import 'dart:ui' as _i4;
 
+import 'package:announcement_scheduler/src/models/scheduled_notification.dart'
+    as _i7;
+import 'package:announcement_scheduler/src/services/scheduling_settings_service.dart'
+    as _i6;
 import 'package:flutter/services.dart' as _i5;
 import 'package:flutter_local_notifications/src/flutter_local_notifications_plugin.dart'
     as _i8;
@@ -20,10 +24,6 @@ import 'package:flutter_local_notifications_platform_interface/flutter_local_not
     as _i10;
 import 'package:flutter_tts/flutter_tts.dart' as _i2;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:announcement_scheduler/src/models/scheduled_notification.dart'
-    as _i7;
-import 'package:announcement_scheduler/src/services/scheduling_settings_service.dart'
-    as _i6;
 import 'package:timezone/timezone.dart' as _i12;
 
 // ignore_for_file: type=lint
@@ -526,24 +526,21 @@ class MockFlutterLocalNotificationsPlugin extends _i1.Mock
   }
 
   @override
-  _i3.Future<bool?> initialize(
-    _i9.InitializationSettings? initializationSettings, {
+  _i3.Future<bool?> initialize({
+    required _i9.InitializationSettings? settings,
     _i10.DidReceiveNotificationResponseCallback?
     onDidReceiveNotificationResponse,
     _i10.DidReceiveBackgroundNotificationResponseCallback?
     onDidReceiveBackgroundNotificationResponse,
   }) =>
       (super.noSuchMethod(
-            Invocation.method(
-              #initialize,
-              [initializationSettings],
-              {
-                #onDidReceiveNotificationResponse:
-                    onDidReceiveNotificationResponse,
-                #onDidReceiveBackgroundNotificationResponse:
-                    onDidReceiveBackgroundNotificationResponse,
-              },
-            ),
+            Invocation.method(#initialize, [], {
+              #settings: settings,
+              #onDidReceiveNotificationResponse:
+                  onDidReceiveNotificationResponse,
+              #onDidReceiveBackgroundNotificationResponse:
+                  onDidReceiveBackgroundNotificationResponse,
+            }),
             returnValue: _i3.Future<bool?>.value(),
           )
           as _i3.Future<bool?>);
@@ -558,28 +555,30 @@ class MockFlutterLocalNotificationsPlugin extends _i1.Mock
           as _i3.Future<_i10.NotificationAppLaunchDetails?>);
 
   @override
-  _i3.Future<void> show(
-    int? id,
+  _i3.Future<void> show({
+    required int? id,
     String? title,
     String? body,
-    _i11.NotificationDetails? notificationDetails, {
+    _i11.NotificationDetails? notificationDetails,
     String? payload,
   }) =>
       (super.noSuchMethod(
-            Invocation.method(
-              #show,
-              [id, title, body, notificationDetails],
-              {#payload: payload},
-            ),
+            Invocation.method(#show, [], {
+              #id: id,
+              #title: title,
+              #body: body,
+              #notificationDetails: notificationDetails,
+              #payload: payload,
+            }),
             returnValue: _i3.Future<void>.value(),
             returnValueForMissingStub: _i3.Future<void>.value(),
           )
           as _i3.Future<void>);
 
   @override
-  _i3.Future<void> cancel(int? id, {String? tag}) =>
+  _i3.Future<void> cancel({required int? id, String? tag}) =>
       (super.noSuchMethod(
-            Invocation.method(#cancel, [id], {#tag: tag}),
+            Invocation.method(#cancel, [], {#id: id, #tag: tag}),
             returnValue: _i3.Future<void>.value(),
             returnValueForMissingStub: _i3.Future<void>.value(),
           )
@@ -604,69 +603,78 @@ class MockFlutterLocalNotificationsPlugin extends _i1.Mock
           as _i3.Future<void>);
 
   @override
-  _i3.Future<void> zonedSchedule(
-    int? id,
+  _i3.Future<void> zonedSchedule({
+    required int? id,
+    required _i12.TZDateTime? scheduledDate,
+    required _i11.NotificationDetails? notificationDetails,
+    required _i13.AndroidScheduleMode? androidScheduleMode,
     String? title,
     String? body,
-    _i12.TZDateTime? scheduledDate,
-    _i11.NotificationDetails? notificationDetails, {
-    required _i13.AndroidScheduleMode? androidScheduleMode,
     String? payload,
     _i14.DateTimeComponents? matchDateTimeComponents,
   }) =>
       (super.noSuchMethod(
-            Invocation.method(
-              #zonedSchedule,
-              [id, title, body, scheduledDate, notificationDetails],
-              {
-                #androidScheduleMode: androidScheduleMode,
-                #payload: payload,
-                #matchDateTimeComponents: matchDateTimeComponents,
-              },
-            ),
+            Invocation.method(#zonedSchedule, [], {
+              #id: id,
+              #scheduledDate: scheduledDate,
+              #notificationDetails: notificationDetails,
+              #androidScheduleMode: androidScheduleMode,
+              #title: title,
+              #body: body,
+              #payload: payload,
+              #matchDateTimeComponents: matchDateTimeComponents,
+            }),
             returnValue: _i3.Future<void>.value(),
             returnValueForMissingStub: _i3.Future<void>.value(),
           )
           as _i3.Future<void>);
 
   @override
-  _i3.Future<void> periodicallyShow(
-    int? id,
+  _i3.Future<void> periodicallyShow({
+    required int? id,
+    required _i10.RepeatInterval? repeatInterval,
+    required _i11.NotificationDetails? notificationDetails,
+    required _i13.AndroidScheduleMode? androidScheduleMode,
     String? title,
     String? body,
-    _i10.RepeatInterval? repeatInterval,
-    _i11.NotificationDetails? notificationDetails, {
-    required _i13.AndroidScheduleMode? androidScheduleMode,
     String? payload,
   }) =>
       (super.noSuchMethod(
-            Invocation.method(
-              #periodicallyShow,
-              [id, title, body, repeatInterval, notificationDetails],
-              {#androidScheduleMode: androidScheduleMode, #payload: payload},
-            ),
+            Invocation.method(#periodicallyShow, [], {
+              #id: id,
+              #repeatInterval: repeatInterval,
+              #notificationDetails: notificationDetails,
+              #androidScheduleMode: androidScheduleMode,
+              #title: title,
+              #body: body,
+              #payload: payload,
+            }),
             returnValue: _i3.Future<void>.value(),
             returnValueForMissingStub: _i3.Future<void>.value(),
           )
           as _i3.Future<void>);
 
   @override
-  _i3.Future<void> periodicallyShowWithDuration(
-    int? id,
+  _i3.Future<void> periodicallyShowWithDuration({
+    required int? id,
+    required Duration? repeatDurationInterval,
+    required _i11.NotificationDetails? notificationDetails,
     String? title,
     String? body,
-    Duration? repeatDurationInterval,
-    _i11.NotificationDetails? notificationDetails, {
     _i13.AndroidScheduleMode? androidScheduleMode =
         _i13.AndroidScheduleMode.exact,
     String? payload,
   }) =>
       (super.noSuchMethod(
-            Invocation.method(
-              #periodicallyShowWithDuration,
-              [id, title, body, repeatDurationInterval, notificationDetails],
-              {#androidScheduleMode: androidScheduleMode, #payload: payload},
-            ),
+            Invocation.method(#periodicallyShowWithDuration, [], {
+              #id: id,
+              #repeatDurationInterval: repeatDurationInterval,
+              #notificationDetails: notificationDetails,
+              #title: title,
+              #body: body,
+              #androidScheduleMode: androidScheduleMode,
+              #payload: payload,
+            }),
             returnValue: _i3.Future<void>.value(),
             returnValueForMissingStub: _i3.Future<void>.value(),
           )

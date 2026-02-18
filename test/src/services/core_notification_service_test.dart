@@ -316,11 +316,11 @@ void main() {
       ).thenAnswer((_) async => 0);
       when(
         mockNotifications.zonedSchedule(
-          any,
-          any,
-          any,
-          any,
-          any,
+          id: anyNamed('id'),
+          title: anyNamed('title'),
+          body: anyNamed('body'),
+          scheduledDate: anyNamed('scheduledDate'),
+          notificationDetails: anyNamed('notificationDetails'),
           androidScheduleMode: anyNamed('androidScheduleMode'),
           matchDateTimeComponents: anyNamed('matchDateTimeComponents'),
           payload: anyNamed('payload'),
@@ -399,11 +399,13 @@ void main() {
 
       final captured = verify(
         mockNotifications.zonedSchedule(
-          captureAny, // id
-          captureAny, // title
-          captureAny, // body
-          captureAny, // scheduledDate
-          captureAny, // notificationDetails
+          id: captureAnyNamed('id'), // id
+          title: captureAnyNamed('title'), // title
+          body: captureAnyNamed('body'), // body
+          scheduledDate: captureAnyNamed('scheduledDate'), // scheduledDate
+          notificationDetails: captureAnyNamed(
+            'notificationDetails',
+          ), // notificationDetails
           androidScheduleMode: anyNamed('androidScheduleMode'),
           matchDateTimeComponents: anyNamed('matchDateTimeComponents'),
           payload: anyNamed('payload'),
@@ -434,6 +436,14 @@ void main() {
           tts: mockTts,
         );
 
+        // Mock announcement time
+        when(
+          mockSettingsService.getAnnouncementHour(),
+        ).thenAnswer((_) async => 10);
+        when(
+          mockSettingsService.getAnnouncementMinute(),
+        ).thenAnswer((_) async => 0);
+
         await service.scheduleRecurringNotifications(
           announcementId: 123,
           content: 'TTS Content',
@@ -444,11 +454,11 @@ void main() {
         // Verify notifications are still scheduled
         verify(
           mockNotifications.zonedSchedule(
-            any,
-            any,
-            any,
-            any,
-            any,
+            id: anyNamed('id'),
+            title: anyNamed('title'),
+            body: anyNamed('body'),
+            scheduledDate: anyNamed('scheduledDate'),
+            notificationDetails: anyNamed('notificationDetails'),
             androidScheduleMode: anyNamed('androidScheduleMode'),
             matchDateTimeComponents: anyNamed('matchDateTimeComponents'),
             payload: anyNamed('payload'),
@@ -471,6 +481,14 @@ void main() {
           tts: mockTts,
         );
 
+        // Mock announcement time
+        when(
+          mockSettingsService.getAnnouncementHour(),
+        ).thenAnswer((_) async => 10);
+        when(
+          mockSettingsService.getAnnouncementMinute(),
+        ).thenAnswer((_) async => 0);
+
         await service.scheduleRecurringNotifications(
           announcementId: 123,
           content: 'No TTS Content',
@@ -481,11 +499,11 @@ void main() {
         // Verify notifications are still scheduled
         verify(
           mockNotifications.zonedSchedule(
-            any,
-            any,
-            any,
-            any,
-            any,
+            id: anyNamed('id'),
+            title: anyNamed('title'),
+            body: anyNamed('body'),
+            scheduledDate: anyNamed('scheduledDate'),
+            notificationDetails: anyNamed('notificationDetails'),
             androidScheduleMode: anyNamed('androidScheduleMode'),
             matchDateTimeComponents: anyNamed('matchDateTimeComponents'),
             payload: anyNamed('payload'),

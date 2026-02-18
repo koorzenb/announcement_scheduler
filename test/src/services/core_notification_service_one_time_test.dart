@@ -36,11 +36,11 @@ void main() {
     ).thenAnswer((_) async {});
     when(
       mockNotifications.zonedSchedule(
-        any,
-        any,
-        any,
-        any,
-        any,
+        id: anyNamed('id'),
+        title: anyNamed('title'),
+        body: anyNamed('body'),
+        scheduledDate: anyNamed('scheduledDate'),
+        notificationDetails: anyNamed('notificationDetails'),
         androidScheduleMode: anyNamed('androidScheduleMode'),
         matchDateTimeComponents: anyNamed('matchDateTimeComponents'),
         payload: anyNamed('payload'),
@@ -105,11 +105,11 @@ void main() {
 
       verify(
         mockNotifications.zonedSchedule(
-          id,
-          any,
-          any,
-          any,
-          any,
+          id: id,
+          title: anyNamed('title'),
+          body: anyNamed('body'),
+          scheduledDate: anyNamed('scheduledDate'),
+          notificationDetails: anyNamed('notificationDetails'),
           androidScheduleMode: anyNamed('androidScheduleMode'),
           matchDateTimeComponents: anyNamed('matchDateTimeComponents'),
           payload: anyNamed('payload'),
@@ -135,11 +135,11 @@ void main() {
 
       verify(
         mockNotifications.zonedSchedule(
-          announcement.id,
-          any,
-          any,
-          any,
-          any,
+          id: announcement.id,
+          title: anyNamed('title'),
+          body: anyNamed('body'),
+          scheduledDate: anyNamed('scheduledDate'),
+          notificationDetails: anyNamed('notificationDetails'),
           androidScheduleMode: anyNamed('androidScheduleMode'),
           matchDateTimeComponents: anyNamed('matchDateTimeComponents'),
           payload: anyNamed('payload'),

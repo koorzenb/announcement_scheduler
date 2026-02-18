@@ -44,7 +44,9 @@ void main() {
     test('cancels notification on platform and removes from storage', () async {
       // Arrange
       const announcementId = 123;
-      when(mockNotifications.cancel(any)).thenAnswer((_) async {});
+      when(
+        mockNotifications.cancel(id: anyNamed('id')),
+      ).thenAnswer((_) async {});
       when(
         mockSettingsService.removeScheduledAnnouncement(any),
       ).thenAnswer((_) async {});
@@ -53,7 +55,7 @@ void main() {
       await service.cancelAnnouncementById(announcementId);
 
       // Assert
-      verify(mockNotifications.cancel(announcementId)).called(1);
+      verify(mockNotifications.cancel(id: announcementId)).called(1);
       verify(
         mockSettingsService.removeScheduledAnnouncement(announcementId),
       ).called(1);
@@ -63,7 +65,7 @@ void main() {
       // Arrange
       const announcementId = 123;
       when(
-        mockNotifications.cancel(any),
+        mockNotifications.cancel(id: anyNamed('id')),
       ).thenThrow(Exception('Platform error'));
 
       // Act & Assert

@@ -42,7 +42,7 @@ void main() {
       // Default mocks
       when(
         mockNotifications.initialize(
-          any,
+          settings: anyNamed('settings'),
           onDidReceiveNotificationResponse: anyNamed(
             'onDidReceiveNotificationResponse',
           ),
@@ -67,19 +67,19 @@ void main() {
       // Capture scheduled notifications
       when(
         mockNotifications.zonedSchedule(
-          any,
-          any,
-          any,
-          any,
-          any,
+          id: anyNamed('id'),
+          title: anyNamed('title'),
+          body: anyNamed('body'),
+          scheduledDate: anyNamed('scheduledDate'),
+          notificationDetails: anyNamed('notificationDetails'),
           androidScheduleMode: anyNamed('androidScheduleMode'),
           matchDateTimeComponents: anyNamed('matchDateTimeComponents'),
           payload: anyNamed('payload'),
         ),
       ).thenAnswer((invocation) async {
-        final id = invocation.positionalArguments[0] as int;
-        final title = invocation.positionalArguments[1] as String?;
-        final body = invocation.positionalArguments[2] as String?;
+        final id = invocation.namedArguments[#id] as int;
+        final title = invocation.namedArguments[#title] as String?;
+        final body = invocation.namedArguments[#body] as String?;
         final payload = invocation.namedArguments[#payload] as String?;
 
         pendingNotifications.add(
@@ -88,8 +88,10 @@ void main() {
       });
 
       // Handle cancellation
-      when(mockNotifications.cancel(any)).thenAnswer((invocation) async {
-        final id = invocation.positionalArguments[0] as int;
+      when(mockNotifications.cancel(id: anyNamed('id'))).thenAnswer((
+        invocation,
+      ) async {
+        final id = invocation.namedArguments[#id] as int;
         pendingNotifications.removeWhere((n) => n.id == id);
       });
 
@@ -297,7 +299,7 @@ void main() {
       await scheduler.cancelAnnouncementById(3001);
 
       // Verify platform cancellation
-      verify(mockNotifications.cancel(3001)).called(1);
+      verify(mockNotifications.cancel(id: 3001)).called(1);
 
       // Verify storage removal
       final announcements = await scheduler.getScheduledAnnouncements();

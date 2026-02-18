@@ -1,11 +1,11 @@
 
 # Changelog
 
-
-
-
-
-
+## [1.4.0] - 2026-02-17
+  
+### Chore
+  
+- Update flutter_local_notifications and build_runner dependencies to latest versions
 
 ## [1.3.0] - 2026-01-14
   
